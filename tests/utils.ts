@@ -49,3 +49,12 @@ export const getCreatorPDA = (creator: PublicKey, programId: PublicKey) => {
       );
       return [pda, bump] as [PublicKey, number];
 }
+
+
+export const getDripcastPDA = (creator: PublicKey, programId: PublicKey) => {
+    const [pda, bump] = PublicKey.findProgramAddressSync(
+        [Buffer.from("dripcast"), creator.toBuffer()],
+        programId
+      );
+      return [pda, bump] as [PublicKey, number];
+}

@@ -13,6 +13,7 @@ import { closeTestSuite } from "./suites/close";
 import { updateTestSuite } from "./suites/update";
 import { initializeTestSuite } from "./suites/initalize";
 import { transferTestSuite } from "./suites/transfer";
+import { withdrawlCreatorTestSuite } from "./suites/withdrawl";
 describe("dripcast", () => {
 
   // Configure the client to use the local cluster.
@@ -47,6 +48,7 @@ describe("dripcast", () => {
     context.ContentCreator = ContentCreator;
     context.ContentConsumer = ContentConsumer;
     context.content1_id = context.content1_id;
+    context.connection = provider.connection;
 
   });
 
@@ -77,6 +79,9 @@ describe("dripcast", () => {
   describe("Updating Account States ", updateTestSuite);
 
   describe("Transfer ", transferTestSuite);
+
+  describe("Withdrawl ", withdrawlCreatorTestSuite);
+
 describe("Closing Account States ", closeTestSuite.bind(this));
 
 });

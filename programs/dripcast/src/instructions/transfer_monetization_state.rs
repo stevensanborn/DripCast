@@ -13,7 +13,8 @@ pub struct TransferMonetizationState<'info> {
     #[account(
         mut,
         seeds = [b"monetization_state",monetization_state.monetization.key().as_ref(), signer.key().as_ref()],
-        bump = monetization_state.bump
+        bump = monetization_state.bump,
+        constraint = monetization_state.user == signer.key()
     )]
     pub monetization_state: Account<'info, MonetizationState>,
    
@@ -21,6 +22,7 @@ pub struct TransferMonetizationState<'info> {
         mut,
         seeds = [b"creator", creator.owner.key().as_ref()],
         bump = creator.bump
+        
     )]
     pub creator: Account<'info, Creator>,
 
