@@ -1,0 +1,1 @@
+pub const MIN_TRANSACTION_FEE: u64 = 10_000;
