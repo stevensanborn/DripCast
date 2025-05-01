@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_lang::system_program;
 use crate::states::creator::Creator;
-
+use crate::global::MIN_TRANSACTION_FEE;
 #[derive(Accounts)]
 pub struct WithdrawlCreator<'info> {
     #[account(mut)]
@@ -50,6 +50,10 @@ impl<'info> WithdrawlCreator<'info> {
         // if self.creator.lamports() - amount < minimum_balance {
         //     return Err(ErrorCode::InsufficientBalance.into());
         // }
+
+      
+
+        
         self.creator.sub_lamports(amount)?;
         self.signer.add_lamports(amount)?;
 

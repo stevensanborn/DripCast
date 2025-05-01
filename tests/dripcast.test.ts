@@ -6,7 +6,7 @@ import { PublicKey, LAMPORTS_PER_SOL, SystemProgram } from "@solana/web3.js";
 import DEVWALLET from "../wallet/DRP89vhFSNTpLYJWTU4VBYjcxQ1bEGZ9qZEd3d68oee5.json";
 import { before, describe, test } from "node:test";
 import assert from "node:assert";
-import { setupNewKeyPair,getMonetizationStatePDA, getMonetizationPDA } from "./utils";
+import { setupNewKeyPair,getMonetizationStatePDA, getMonetizationPDA, airdrop } from "./utils";
 // import { Keypair } from "@solana/web3.js";
 import { context } from "./context";
 import { closeTestSuite } from "./suites/close";
@@ -54,6 +54,10 @@ describe("dripcast", () => {
 
   //INITIALIZE DRIPCAST
   test("DRIPCAST PROGRAM INITIALIZATION", async () => {
+
+    //add some funds to the dripSigner
+    await airdrop(provider.connection,dripSigner.publicKey,1);
+    
     // Add your test here.
     const tx = await program.methods.initializeDripcast().accounts({
     }).signers([dripSigner]).rpc();
@@ -71,7 +75,7 @@ describe("dripcast", () => {
       console.log("VERIFIED OWNER");
 
       context.dripcast = pkey;
-
+      
   });
 
   describe("Initialization ", initializeTestSuite);
@@ -82,6 +86,6 @@ describe("dripcast", () => {
 
   describe("Withdrawl ", withdrawlCreatorTestSuite);
 
-describe("Closing Account States ", closeTestSuite.bind(this));
+describe("Closing Account States ", closeTestSuite.bind(this,[dripSigner]));
 
 });

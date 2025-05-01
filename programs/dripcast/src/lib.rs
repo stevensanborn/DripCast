@@ -88,6 +88,13 @@ pub mod dripcast {
         ctx.accounts.withdrawl_creator(amount)
     }
 
+    pub fn withdrawl_dripcast(
+        ctx: Context<WithdrawlDripcast>,
+        amount: u64,
+    ) -> Result<()> {
+        ctx.accounts.withdrawl_dripcast(amount)
+    }
+
     pub fn close_monetization_state(
         ctx: Context<CloseMonetizationState>,
     ) -> Result<()> {
