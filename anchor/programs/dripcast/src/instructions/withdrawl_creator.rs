@@ -1,7 +1,6 @@
 use anchor_lang::prelude::*;
-use anchor_lang::system_program;
 use crate::states::creator::Creator;
-use crate::global::MIN_TRANSACTION_FEE;
+
 #[derive(Accounts)]
 pub struct WithdrawlCreator<'info> {
     #[account(mut)]

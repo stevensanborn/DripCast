@@ -1,9 +1,7 @@
 
 
 use anchor_lang::prelude::*;
-use crate::{instructions::update_monetization_state, states::monetization::MonetizationState};
-use crate::global;
-use anchor_lang::solana_program::system_instruction;
+use crate::{ states::monetization::MonetizationState};
 #[derive(Accounts)]
 
 pub struct UpdateMonetizationState<'info> {

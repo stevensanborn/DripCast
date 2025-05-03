@@ -1,13 +1,11 @@
 import * as anchor from "@coral-xyz/anchor";
-// import { describe, it } from "mocha";
-import { BN, Program } from "@coral-xyz/anchor";
+import { Program } from "@coral-xyz/anchor";
 import { Dripcast } from "../target/types/dripcast";
 import { PublicKey, LAMPORTS_PER_SOL, SystemProgram } from "@solana/web3.js";
-import DEVWALLET from "../wallet/DRP89vhFSNTpLYJWTU4VBYjcxQ1bEGZ9qZEd3d68oee5.json";
+import DEVWALLET from "../../wallet/DRP89vhFSNTpLYJWTU4VBYjcxQ1bEGZ9qZEd3d68oee5.json";
 import { before, describe, test } from "node:test";
 import assert from "node:assert";
-import { setupNewKeyPair,getMonetizationStatePDA, getMonetizationPDA, airdrop } from "./utils";
-// import { Keypair } from "@solana/web3.js";
+import { setupNewKeyPair, airdrop } from "./utils";
 import { context } from "./context";
 import { closeTestSuite } from "./suites/close";
 import { updateTestSuite } from "./suites/update";

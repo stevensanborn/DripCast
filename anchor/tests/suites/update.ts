@@ -1,7 +1,7 @@
 
 import assert from 'assert';
 import { context } from '../context';
-import { getCreatorPDA, getMonetizationPDA } from '../utils';
+import {  getMonetizationPDA } from '../utils';
 import { getMonetizationStatePDA } from '../utils';
 import { SystemProgram } from '@solana/web3.js';
 import {  test } from "node:test";

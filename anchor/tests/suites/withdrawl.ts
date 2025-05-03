@@ -2,11 +2,11 @@ import assert from 'assert';
 import { context } from '../context';
 import { getCreatorPDA, getDripcastPDA, getMonetizationPDA } from '../utils';
 import { getMonetizationStatePDA } from '../utils';
-import { Keypair, SystemProgram } from '@solana/web3.js';
+import {  SystemProgram } from '@solana/web3.js';
 import {  test } from "node:test";
 import { BN } from '@coral-xyz/anchor';
 import * as anchor from '@coral-xyz/anchor';
-import DEVWALLET from "../../wallet/DRP89vhFSNTpLYJWTU4VBYjcxQ1bEGZ9qZEd3d68oee5.json";
+import DEVWALLET from "../../../wallet/DRP89vhFSNTpLYJWTU4VBYjcxQ1bEGZ9qZEd3d68oee5.json";
 
 export const withdrawlCreatorTestSuite = () => {
     const program = context.program

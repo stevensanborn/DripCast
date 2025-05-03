@@ -3,7 +3,6 @@ import assert from 'assert';
 import { context } from '../context';
 import { getMonetizationPDA } from '../utils';
 import { getMonetizationStatePDA } from '../utils';
-import { SystemProgram } from '@solana/web3.js';
 import {  test } from "node:test";
 import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
