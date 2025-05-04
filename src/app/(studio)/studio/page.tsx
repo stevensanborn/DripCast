@@ -20,8 +20,15 @@ const StudioPage = async () => {
 
     return (
         <HydrateClient>
-            
-            <StudioView userId={user.id}></StudioView>
+            {
+                user ?(
+                    <StudioView userId={user.id}></StudioView>
+                )
+                :
+                <div>
+                    <p>You are not authorized to access this page</p>
+                </div>  
+            }
         </HydrateClient>
     )
 }   

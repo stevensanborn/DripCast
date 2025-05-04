@@ -1,6 +1,7 @@
 "use client"
 import MuxPlayer from "@mux/mux-player-react"
 import { THUMBNAIL_FALLBACK_URL } from "../../constants";
+import { useRef } from "react";
 
 interface VideoPlayerProps{
     videoId:string;
@@ -19,17 +20,12 @@ export const VideoPlayerSkeleton = () => {
 
 const VideoPlayer = ({videoId,playbackId,posterUrl,autoPlay,onPlay}:VideoPlayerProps) => {
     
-    // if(!playbackId){
-    //     return (
-    //         <div className="w-full h-full bg-muted flex items-center justify-center">
-    //             <p className="text-sm text-muted-foreground">No video found</p>
-    //         </div>
-    //     )
-    // }
+    const ref = useRef<typeof MuxPlayer>(null);
+    console.log(ref.current);
     return (
         
-            <MuxPlayer 
-           
+            <MuxPlayer
+            ref={ref}
             playbackId={playbackId ?? ""}
             poster={posterUrl || THUMBNAIL_FALLBACK_URL}
             playerInitTime={0}
@@ -39,7 +35,8 @@ const VideoPlayer = ({videoId,playbackId,posterUrl,autoPlay,onPlay}:VideoPlayerP
             className={"w-full h-full object-cover "+videoId}
             accentColor="#FF2056"
             onError={(error) => {
-                console.error(error);
+                // console.error(error);
+                console.log(error);
             }}
             style={{
                 '--media-object-fit': 'cover',
