@@ -25,7 +25,7 @@ const VideoPlayer = ({videoId,playbackId,posterUrl,autoPlay,onPlay}:VideoPlayerP
     return (
         
             <MuxPlayer
-            ref={ref}
+            
             playbackId={playbackId ?? ""}
             poster={posterUrl || THUMBNAIL_FALLBACK_URL}
             playerInitTime={0}
