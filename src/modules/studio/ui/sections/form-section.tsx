@@ -213,7 +213,7 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
                      
                     </div>
                     <div className="flex  gap-x-2">
-                        {monetizations.map((monetization,index)=>(
+                        {monetizations.map((monetization)=>(
                             <div key={monetization.id} 
                                 className="flex flex-col items-start justify-start border border-dashed rounded-md border-neutral-400 h-[84px] w-[153px] p-2 relative">
                                 <p className="text-xs line-clamp-2 font-bold">{

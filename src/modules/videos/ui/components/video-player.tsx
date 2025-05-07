@@ -1,7 +1,6 @@
 "use client"
 import MuxPlayer from "@mux/mux-player-react"
 import { THUMBNAIL_FALLBACK_URL } from "../../constants";
-import ReactPlayer from "react-player";
 interface VideoPlayerProps{
     videoId:string;
     playbackId?:string | null| undefined;

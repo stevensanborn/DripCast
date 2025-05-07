@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { monetization, monetizationInsertSchema, monetizationUpdateSchema } from "@/db/schema"
+import { monetization } from "@/db/schema"
 import { Form, FormField, FormLabel, FormMessage, FormControl, FormItem } from "@/components/ui/form"
 import { z } from "zod"
 import { trpc } from "@/trpc/client"
@@ -15,11 +15,10 @@ import { Input } from "@/components/ui/input"
 import { useEffect, useRef, useState } from "react"
 import { useForm,  } from "react-hook-form"
 import { Textarea } from "@/components/ui/textarea"
-import { Slider } from "@/components/ui/slider"
 import ReactVideoPlayer from "@/modules/videos/ui/components/react-video-player"
 import ReactPlayer from "react-player"
 
-import { useSearchParams } from 'next/navigation'
+// import { useSearchParams } from 'next/navigation'
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { ArrowRightIcon } from "lucide-react"
@@ -34,8 +33,8 @@ interface MonetizationFormProps {
 }
 
 export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose }: MonetizationFormProps) => {
-    const searchParams = useSearchParams()
-    const type = searchParams.get("type")
+    // const searchParams = useSearchParams()
+    // const type = searchParams.get("type")
     const utils = trpc.useUtils();
 
     const refPage1 = useRef<HTMLDivElement>(null)
@@ -43,8 +42,8 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
 
     const refVideoPlayer = useRef<ReactPlayer>(null)
     const [duration, setDuration] = useState(0)
-    const [startTime, setStartTime] = useState(0)
-    const [endTime, setEndTime] = useState(1.0)
+    // const [startTime, setStartTime] = useState(0)
+    // const [endTime, setEndTime] = useState(1.0)
     const insertMonetization = trpc.monetization.create.useMutation({
         onSuccess: () => {
             toast.success("Monetization created")
@@ -209,7 +208,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
 
                                 <div className={cn("flex flex-col gap-2 justify-start items-start ")}>
                                     <p className="text-lg font-bold">Choose a Type</p>
-                                    <FormField control={formCurrent.control} name="type" render={({ field }) => (
+                                    <FormField control={formCurrent.control} name="type" render={({}) => (
                                         <FormItem>
                                             <FormControl>
                                                 <RadioGroup defaultValue="purchase" onValueChange={(value) => {
@@ -264,7 +263,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                                             autoPlay={true}
                                         />
                                         <div className="w-full h-[10px] top-full mt-2 absolute bottom-0 left-0 right-0" 
-                                        onMouseDown={e => {
+                                        onMouseDown={() => {
                                             // dragControls.start(e as unknown as PointerEvent,{ snapToCursor: true })
                                         }}>
                                             
@@ -301,8 +300,8 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                                                         refProgressBar.current.style.width = (handleX2.get() - left)  + 'px'
                                                         console.log(handleX2.get())
                                                         if(duration > 0){
-                                                            let percentage = left / width
-                                                            let time = Math.round( duration * percentage *100) / 100
+                                                            const percentage = left / width
+                                                            const time = Math.round( duration * percentage *100) / 100
                                                             formCurrent.setValue("startTime",time.toString())
                                                             refVideoPlayer.current?.seekTo(percentage,"fraction")
                                                         }
@@ -333,8 +332,8 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                                                         refProgressBar.current.style.left = (handleX.get() +5 )  + 'px'
                                                         refProgressBar.current.style.width = ( left-handleX.get())  + 'px'
                                                         if(duration > 0){
-                                                            let percentage = left / width
-                                                            let time = Math.round( duration * percentage *100) / 100
+                                                            const percentage = left / width
+                                                            const time = Math.round( duration * percentage *100) / 100
                                                             formCurrent.setValue("endTime",time.toString())
                                                             refVideoPlayer.current?.seekTo(percentage,"fraction")
                                                         }

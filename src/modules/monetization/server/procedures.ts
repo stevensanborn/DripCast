@@ -1,6 +1,6 @@
 import { baseProcedure, createTRPCRouter } from "@/trpc/init"
 import { protectedProcedure } from "@/trpc/init"
-import { monetization, monetizationInsertSchema, monetizationType, monetizationUpdateSchema } from "@/db/schema"
+import { monetization, monetizationInsertSchema,  monetizationUpdateSchema } from "@/db/schema"
 import { z } from "zod"
 import { TRPCError } from "@trpc/server"
 import { eq } from "drizzle-orm"
@@ -31,7 +31,7 @@ export const monetizationRouter = createTRPCRouter({
     }),
 
     update: protectedProcedure.input(monetizationUpdateSchema).mutation(async({ctx,input})=>{
-        const {id,videoId,type,cost,duration,startTime,endTime,creatorKey,title,description} = input
+        const {id,videoId,type,cost,duration,startTime,endTime,title,description} = input
         if(!id){
             throw new TRPCError({code:"BAD_REQUEST",message:"No id provided"})
         }
@@ -61,7 +61,7 @@ export const monetizationRouter = createTRPCRouter({
         if(!user){
             throw new TRPCError({code:"UNAUTHORIZED",message:"You must be logged in to update monetization"})
         }
-        const userId = user.id
+        // const userId = user.id
 
         const [deletedMonetization] = await db.delete(monetization).where(eq(monetization.id,id)).returning()
         if(!deletedMonetization){
@@ -77,7 +77,7 @@ export const monetizationRouter = createTRPCRouter({
         }
         return result
     }),
-    getMany:baseProcedure.input(z.object({videoId:z.string()})).query(async({ctx,input})=>{
+    getMany:baseProcedure.input(z.object({videoId:z.string()})).query(async({input})=>{
         const {videoId} = input
         // const {user} = ctx
         // if(!user){

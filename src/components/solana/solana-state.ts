@@ -1,6 +1,6 @@
 
 import { WalletContextState } from "@solana/wallet-adapter-react";
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Connection } from "@solana/web3.js";
 
 // import { Connection } from "@solana/web3.js";
 

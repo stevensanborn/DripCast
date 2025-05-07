@@ -11,7 +11,7 @@ import {
 } from "@solana/wallet-adapter-react";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
-import { clusterApiUrl, Connection } from "@solana/web3.js";
+import { clusterApiUrl } from "@solana/web3.js";
 import { SolanaState } from "./solana-state";
 // import { UnsafeBurnerWalletAdapter } from "@solana/wallet-adapter-wallets";
 
@@ -24,10 +24,11 @@ export default function AppWalletProvider({
     const endpoint = useMemo(() => clusterApiUrl(network), [network]);
     const wallets = useMemo(
       () => [
-        // manually add any legacy wallet adapters here
-        // new UnsafeBurnerWalletAdapter(),
+    //     // manually add any legacy wallet adapters here
+    //     // new UnsafeBurnerWalletAdapter(),
       ],
-      [network],
+      []
+    // //   [network], unecessary dependency
     );
    
     // useMemo(()=>{
@@ -41,7 +42,6 @@ export default function AppWalletProvider({
           <WalletModalProvider>
             <SolanaStateCopier />
             {children}
-            
         </WalletModalProvider>
         </WalletProvider>
       </ConnectionProvider>

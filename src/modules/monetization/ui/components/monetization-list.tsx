@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { monetization } from "@/db/schema"
 import { getMonetizationType } from "@/lib/utils"
 import { trpc } from "@/trpc/client"
-import { Edit2, Edit2Icon, PlusIcon, Trash2 } from "lucide-react"
+import { Edit2Icon, PlusIcon, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
 interface MonetizationListProps {

@@ -1,12 +1,6 @@
 "use client"
 
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import {
-  PublicKey,
-  Transaction,
-  TransactionInstruction,
-  
-} from "@solana/web3.js";
+
 import AppWalletProvider from "./provider";
 import { SolanaState } from "./solana-state";
 import { toast } from "sonner";

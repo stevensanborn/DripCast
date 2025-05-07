@@ -24,7 +24,6 @@ export const VideoPlayerSkeleton = () => {
 
 const VideoPlayer =  React.forwardRef(({videoId,playbackId,posterUrl,autoPlay,onPlay,onDuration,controls=true,muted=false}:VideoPlayerProps,ref:React.Ref<ReactPlayer>) => {
     
-    
 
     return (
             
@@ -41,9 +40,7 @@ const VideoPlayer =  React.forwardRef(({videoId,playbackId,posterUrl,autoPlay,on
                 onError={(error)=>{
                     console.log(error);
                 }}
-                onProgress={(progress)=>{
-                   
-                }}
+            
                 onDuration={(duration)=>{
                     if(onDuration){
                         console.log(duration)
@@ -55,5 +52,5 @@ const VideoPlayer =  React.forwardRef(({videoId,playbackId,posterUrl,autoPlay,on
         
     )
 })
-
+VideoPlayer.displayName = "VideoPlayer";
 export default VideoPlayer;
