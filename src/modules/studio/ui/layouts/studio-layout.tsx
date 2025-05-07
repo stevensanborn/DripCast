@@ -4,7 +4,7 @@ import { StudioSidebar } from "@/modules/studio/ui/components/studio-sidebar";
 
 interface StudioLayoutProps { 
     children: React.ReactNode;
-  }
+}
   
 export const StudioLayout = ({ children }: StudioLayoutProps) => {
     return (

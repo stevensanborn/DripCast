@@ -10,18 +10,20 @@ import Link from "next/link";
 import { VideoThumbnail } from "@/modules/videos/ui/components/video-thumbnail";
 import { snakeCaseToTitleCase } from "@/lib/utils";
 import { format } from "date-fns";
-import { CircleCheckIcon, LockIcon } from "lucide-react";
+import { Banknote, CircleCheckIcon, LockIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 
 interface VideosSectionProps{
     userId:string
+    visibility:"public" | "private" | null | undefined
 }
 
-export const VideosSection = ({userId}:VideosSectionProps) => {
+export const VideosSection = ({userId,visibility}:VideosSectionProps) => {
     return (
         <Suspense fallback={<VideoSectionSkeleton />}>
             <ErrorBoundary fallback={<p>Error</p>}>
-            <VideosSectionSuspense userId={userId} />
+            <VideosSectionSuspense userId={userId} visibility={visibility} />
             </ErrorBoundary>
         </Suspense>
     )
@@ -40,8 +42,8 @@ const VideoSectionSkeleton = () => {
                             <TableHead>Status</TableHead>
                             <TableHead>Date</TableHead>
                             <TableHead  className="text-right ">Views</TableHead>
-                            <TableHead className="text-right">Comments</TableHead>
                             <TableHead className="text-right pr-6   ">Likes</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
                             
                         </TableRow>
                     </TableHeader>  
@@ -71,12 +73,13 @@ const VideoSectionSkeleton = () => {
                                 <TableCell className="text-right">
                                     <Skeleton className="h-4 w-16" />
                                 </TableCell>
-                                <TableCell className="text-right">
-                                   <Skeleton className="h-4 w-16" />
-                                </TableCell> 
+                             
                                 <TableCell className="text-right">
                                     <Skeleton className="h-4 w-16 pr-6" />
                                 </TableCell>
+                                <TableCell className="text-right">
+                                   <Skeleton className="h-4 w-16" />
+                                </TableCell> 
                             </TableRow>
                         ))}
                     </TableBody>
@@ -89,14 +92,14 @@ const VideoSectionSkeleton = () => {
 
 
 
-const VideosSectionSuspense = ({userId}:VideosSectionProps) => {
+const VideosSectionSuspense = ({userId,visibility}:VideosSectionProps) => {
 
     const [data,query] = trpc.videos.getMany.useSuspenseInfiniteQuery({
         limit: INFINITE_QUERY_LIMIT,
         userId:userId,
+        visibility:visibility   
     },{
         getNextPageParam: (lastPage) => lastPage.nextCursor,
-
     })
     
     return (
@@ -152,13 +155,16 @@ const VideosSectionSuspense = ({userId}:VideosSectionProps) => {
                                             {format(new Date(video.createdAt),"MMM d, yyyy")}
                                         </TableCell>
                                         <TableCell className="pl-6 text-right text-sm">
-                                           video.views
+                                         {video.viewCount}
+                                        </TableCell>
+                                        
+                                        <TableCell className="pl-6 text-right text-sm pr-6">
+                                           {video.likeCount}
                                         </TableCell>
                                         <TableCell className="pl-6 text-right text-sm">
-                                           video.comments
-                                        </TableCell>
-                                        <TableCell className="pl-6 text-right text-sm pr-6">
-                                           video.likes
+                                           <Link href={`studio/videos/${video.id}/monetization`} className="text-blue-500 hover:underline">
+                                            <Button variant="outline" size="sm"><Banknote className="size-4 mr-2"></Banknote> Monetize</Button>
+                                           </Link>
                                         </TableCell>
                                 </TableRow>
                                 </Link>

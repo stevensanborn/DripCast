@@ -11,7 +11,7 @@ const StudioView = ({userId}:{userId:string}) => {
                 Manage your channel content and videos
                 </p>
             </div>
-            <VideosSection userId={userId}></VideosSection>
+            <VideosSection userId={userId} visibility={null}></VideosSection>
         </div>
     )
 }

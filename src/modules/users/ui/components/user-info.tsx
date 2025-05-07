@@ -30,9 +30,9 @@ export const UserInfo = ({name,className,variant}:UserInfoProps)=>{
        
             <Tooltip>
                 <TooltipTrigger asChild>
-                    <p className="text-gray-500 hover:text-gray-700 line-clamp-1">{name}</p>
+                    <h3 className="text-dripcast-blue hover:text-dripcast-blue/70 line-clamp-1">{name}</h3>
                 </TooltipTrigger>
-                 <TooltipContent align="center" className="bg-black/70">
+                 <TooltipContent align="center" className="bg-dripcast_blue/70 text-dripcast-blue">
                     <p>{name}</p>
                 </TooltipContent>
             </Tooltip>

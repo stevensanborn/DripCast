@@ -15,3 +15,27 @@ export const formatDuration = (duration:number) => {
 export const snakeCaseToTitleCase = (str:string) => {
   return str.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
 }
+
+
+export const MONETIZATION_TYPES = [
+  {
+    name: 'Purchase',
+    value: 'purchase',
+  },
+  {
+    name: 'Purchase Snippet',
+    value: 'snippet',
+  },
+  {
+    name: 'Pay Per Minute',
+    value: 'payperminute',
+  },
+]
+
+export const getMonetizationType = (value:string) => {
+  return MONETIZATION_TYPES.find((type) => type.value === value)?.name;
+}
+
+export const getMonetizationTypeValue = (name:string) => {
+  return MONETIZATION_TYPES.find((type) => type.name === name)?.value;
+}

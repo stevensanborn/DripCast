@@ -9,10 +9,15 @@ export default withUt({
     "./src/modules/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+	
   	extend: {
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
+			dripcast:'darkslategrey',
+			dripcast_blue:'#90D4CD',
+			alice_blue:'#F0F8FF',
+			indian_red: '#CD5040',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'

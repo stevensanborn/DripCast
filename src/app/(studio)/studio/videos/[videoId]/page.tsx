@@ -23,6 +23,8 @@ const StudioVideosPage = async ({params}:StudioVideosPageProps) => {
     }
     void trpc.studio.getOne.prefetch({id: videoId})
     void trpc.categories.getMany.prefetch()
+    void trpc.monetization.getMany.prefetch({videoId})
+    
     return (
         <div>
             <VideoView videoId={videoId} />

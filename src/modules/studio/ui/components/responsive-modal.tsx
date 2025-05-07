@@ -8,6 +8,7 @@ interface ResponsiveModalProps {
     title: string;
     open: boolean;
     children: React.ReactNode;
+
     onOpenChange: (open: boolean) => void;
 }
 
@@ -17,8 +18,8 @@ export const ResponsiveModal = ({title, children, open, onOpenChange}: Responsiv
 
     if (isMobile) {
         return (
-            <Drawer open={open} onOpenChange={onOpenChange}>
-                <DrawerContent>
+            <Drawer open={open} onOpenChange={onOpenChange} >
+                <DrawerContent >
                     <DrawerHeader>
                         <DrawerTitle>{title}</DrawerTitle>
                     </DrawerHeader>
@@ -31,7 +32,7 @@ export const ResponsiveModal = ({title, children, open, onOpenChange}: Responsiv
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
+            <DialogContent className="max-w-4xl">
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                 </DialogHeader>

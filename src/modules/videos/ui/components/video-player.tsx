@@ -1,14 +1,14 @@
 "use client"
 import MuxPlayer from "@mux/mux-player-react"
 import { THUMBNAIL_FALLBACK_URL } from "../../constants";
-import { useRef } from "react";
-
+import ReactPlayer from "react-player";
 interface VideoPlayerProps{
     videoId:string;
     playbackId?:string | null| undefined;
     posterUrl?:string | null| undefined;
     autoPlay?:boolean;
     onPlay?:()=>void;
+
 }
 
 export const VideoPlayerSkeleton = () => {
@@ -20,8 +20,7 @@ export const VideoPlayerSkeleton = () => {
 
 const VideoPlayer = ({videoId,playbackId,posterUrl,autoPlay,onPlay}:VideoPlayerProps) => {
     
-    const ref = useRef<typeof MuxPlayer>(null);
-    console.log(ref.current);
+   
     return (
         
             <MuxPlayer
@@ -41,7 +40,7 @@ const VideoPlayer = ({videoId,playbackId,posterUrl,autoPlay,onPlay}:VideoPlayerP
             style={{
                 '--media-object-fit': 'cover',
             } as React.CSSProperties}
-            />
+            /> 
         
     )
 }

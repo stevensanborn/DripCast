@@ -5,13 +5,13 @@ import { DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/co
 import { Form, FormField, FormLabel, FormMessage, FormControl, FormItem } from "@/components/ui/form"
 import { DropdownMenu } from "@/components/ui/dropdown-menu"
 import { trpc } from "@/trpc/client"
-import {  MoreVerticalIcon, CopyIcon, TrashIcon, CheckIcon, Globe2Icon, LockIcon, ImagePlusIcon, RotateCcw, SparklesIcon, RefreshCcw } from "lucide-react"
-import { Suspense, useState } from "react"
+import {  MoreVerticalIcon, CopyIcon, TrashIcon, CheckIcon, Globe2Icon, LockIcon, ImagePlusIcon, RotateCcw, SparklesIcon, RefreshCcw, PlusIcon, PencilIcon } from "lucide-react"
+import { Suspense, useEffect, useState } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Input } from "@/components/ui/input"
-import { videoUpdateSchema } from "@/db/schema"
+import { monetization, videoUpdateSchema } from "@/db/schema"
 import { z } from "zod"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -19,11 +19,17 @@ import { toast } from "sonner"
 import Link from "next/link"
 import { useRouter } from "next/navigation";
 import VideoPlayer from "@/modules/videos/ui/components/video-player"
-import { snakeCaseToTitleCase } from "@/lib/utils"
+import { getMonetizationType, snakeCaseToTitleCase } from "@/lib/utils"
 import Image from "next/image"
 import { THUMBNAIL_FALLBACK_URL } from "@/modules/videos/constants"
 import { ThumbnailUploadModal } from "@/modules/studio/ui/components/thumbnail-upload-modal"
 import { APP_URL } from "@/constants"
+import { ResponsiveModal } from "../components/responsive-modal"
+import { MonetizationForm } from "@/modules/monetization/ui/components/monetization-form"
+import { TooltipProvider } from "@/components/ui/tooltip"
+import { TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { Tooltip } from "@/components/ui/tooltip"
+
 
 interface FormSectionProps {
     videoId: string
@@ -33,10 +39,12 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
     const router = useRouter();
     const utils = trpc.useUtils();
     const [video] = trpc.studio.getOne.useSuspenseQuery({id: videoId})
+    const [monetizations] = trpc.monetization.getMany.useSuspenseQuery({videoId})
     const [categories] = trpc.categories.getMany.useSuspenseQuery()
     const [thumbnailModalOpen, setThumbnailModalOpen] = useState(false)
-
-
+    const [showMonetization, setShowMonetization] = useState(false)
+    const [selectedMonetization, setSelectedMonetization] = useState<typeof monetization.$inferSelect | null>(null)
+    
     const restoreThumbnail = trpc.videos.restoreThumbnail.useMutation({
         onSuccess: () => {
           utils.studio.getMany.invalidate()
@@ -61,8 +69,19 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
     const removeVideo = trpc.videos.removeVideo.useMutation({
         onSuccess: () => {
           utils.studio.getMany.invalidate()
+          utils.studio.getOne.invalidate({id: videoId})
           toast.success("Video deleted")
           router.push("/studio/")
+        },
+        onError: (error) => {
+         toast.error(error.message)
+        }
+    })
+
+    const removeMonetization = trpc.monetization.remove.useMutation({
+        onSuccess: () => {
+          utils.monetization.getMany.invalidate()
+          toast.success("Monetization deleted")
         },
         onError: (error) => {
          toast.error(error.message)
@@ -104,14 +123,26 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
         },2000)
     }   
 
+    useEffect(()=>{
+        if(selectedMonetization){
+            setShowMonetization(true)
+        }
+    },[selectedMonetization])
+    useEffect(()=>{
+        if(!showMonetization){
+            setSelectedMonetization(null)
+        }
+    },[showMonetization])
+
     return (
     <>
     <ThumbnailUploadModal videoId={videoId} open={thumbnailModalOpen} onOpenChange={setThumbnailModalOpen} />
+    
     <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold">Video Details{video.title}</h1>
+                    <h1 className="text-2xl font-bold">Video Details - {video.title}</h1>
                     <p className="text-sm text-muted-foreground">Manage your video details here</p>
                 </div>
                 <div className="flex items-center gap-x-2">
@@ -158,14 +189,66 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
                                 <Textarea {...field}
                                     placeholder="Enter video description"
                                     value={field.value ?? ""}
-                                    rows={10}
+                                    rows={6}
                                     className="resize-none pr-10"
                                 />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
-
+                    <div className="flex items-center justify-start gap-x-2">
+                    <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger>
+                    <Button size="icon" className="size-8 flex items-center justify-center rounded-full" onClick={()=>setShowMonetization(true)} ><PlusIcon className="size-4 "></PlusIcon></Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>Add Monetization</p>
+                    </TooltipContent>
+                    </Tooltip>
+                    </TooltipProvider>
+                        <div>Monetizations</div>
+                        
+                        {/*  */}
+                     
+                    </div>
+                    <div className="flex  gap-x-2">
+                        {monetizations.map((monetization,index)=>(
+                            <div key={monetization.id} 
+                                className="flex flex-col items-start justify-start border border-dashed rounded-md border-neutral-400 h-[84px] w-[153px] p-2 relative">
+                                <p className="text-xs line-clamp-2 font-bold">{
+                                monetization.title
+                                }</p>
+                                <p className="text-xs text-muted-foreground">{
+                                getMonetizationType(monetization.type)
+                                }</p>
+                                <p className="text-xs">{
+                                monetization.cost
+                                }</p>
+                        <div className="absolute top-1 right-1">
+                        <DropdownMenu >
+                        <DropdownMenuTrigger asChild >
+                            <Button size="icon" className="size-6 flex items-center justify-center rounded-xl" variant="secondary" ><MoreVerticalIcon className="size-2" ></MoreVerticalIcon></Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start">
+                                <DropdownMenuItem className="cursor-pointer" onClick={()=>{
+                                    console.log(monetization)
+                                     setSelectedMonetization(monetization)
+                                }}> 
+                                            <PencilIcon className="size-4 mr-2"></PencilIcon>
+                                    Update
+                                </DropdownMenuItem>
+                                    <DropdownMenuItem className="cursor-pointer" onClick={()=>removeMonetization.mutate({id:monetization.id})}> 
+                                        <TrashIcon className="size-4 mr-2"></TrashIcon>
+                                        Delete
+                                    </DropdownMenuItem>
+                                    
+                        </DropdownMenuContent>
+                        </DropdownMenu>
+</div>
+                            </div>
+                        ))}
+                    </div>
                     <FormField 
                     control={form.control}
                     name="thumbnailUrl"
@@ -175,7 +258,7 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
                             <FormItem>
                                 <FormLabel>Thumbnail</FormLabel>
                                 <FormControl>
-                                        <div className="p-0.5 border border-dashed border-neutral-400 relative h-[84px] w-[153px] group">
+                                        <div className="p-0.5 border border-dashed rounded-md border-neutral-400 relative h-[84px] w-[153px] group">
                                             <Image src={video.thumbnailUrl||THUMBNAIL_FALLBACK_URL} alt="thumbnail" fill className="object-cover rounded-md" />  
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
@@ -189,7 +272,7 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
                                                         <ImagePlusIcon className="size-4 mr-2"></ImagePlusIcon>
                                                         Change
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem>
+                                                    <DropdownMenuItem disabled={true}>
                                                         <SparklesIcon className="size-4 mr-2"></SparklesIcon>
                                                         AI-Generated Thumbnail
                                                     </DropdownMenuItem>
@@ -225,13 +308,15 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
 
                             <FormMessage />
                         </FormItem>
+
+                        
                     )} />
 
-
+                    
                 </div>
                 {/* new column */}
-                <div className="flex flex-col gap-y-8 lg:col-span-2">
-                    <div className="flex flex-col gap-4 bg-[#F9F9F9] rounded-xl overflow-hidden h-fit " >
+                <div className="flex flex-col gap-y-8 lg:col-span-2 " >
+                    <div className="flex flex-col gap-4 rounded-xl overflow-hidden h-fit bg-slate-700" >
                         <div className="relative w-full aspect-video overflow-hidden">
                             <VideoPlayer videoId={videoId}
                                 playbackId={video.muxPlaybackId}
@@ -282,36 +367,42 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
                         </div>
                     </div>
 
-                    <FormField control={form.control} name="visibility" render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Visibility</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value ?? undefined}>
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select a Visibility" />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    
-                                        <SelectItem value="public">
-                                        <div className="flex items-center"> <Globe2Icon className="size-4 mr-2"></Globe2Icon>
-                                            Public</div>
-                                        </SelectItem>
-                                        <SelectItem value="private">
-                                            <div className="flex items-center"> <LockIcon className="size-4 mr-2"></LockIcon>
-                                            Private</div>
-                                        </SelectItem>
-                                  
-                                </SelectContent>
-                            </Select>
+                            <FormField control={form.control} name="visibility" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Visibility</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value ?? undefined}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select a Visibility" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
 
-                            <FormMessage />
-                        </FormItem>
-                    )} />
+                                            <SelectItem value="public">
+                                                <div className="flex items-center"> <Globe2Icon className="size-4 mr-2"></Globe2Icon>
+                                                    Public</div>
+                                            </SelectItem>
+                                            <SelectItem value="private">
+                                                <div className="flex items-center"> <LockIcon className="size-4 mr-2"></LockIcon>
+                                                    Private</div>
+                                            </SelectItem>
+
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
                 </div>
             </div>
         </form>
+        
     </Form>
+   
+    <ResponsiveModal title={"Monetize "} open={showMonetization}  onOpenChange={()=>{setShowMonetization(false)}}  >
+       <div className="w-full overflow-y-scroll max-h-[80vh] no-scrollbar">
+       <MonetizationForm videoId={videoId} video={video} selectedMonetization={selectedMonetization} onClose={()=>{setShowMonetization(false)}} />
+       </div>
+    </ResponsiveModal>
     </>)
 }
 

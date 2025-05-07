@@ -1,8 +1,7 @@
-import { pgTable, uuid, text, timestamp, uniqueIndex, pgEnum, foreignKey, doublePrecision } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, uniqueIndex, pgEnum, foreignKey, doublePrecision, varchar, decimal, serial } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from "drizzle-zod";
 import { primaryKey } from "drizzle-orm/pg-core";
-
 
 //USER
 export const users = pgTable("users",{
@@ -252,4 +251,37 @@ export const commentReactionSelectSchema = createSelectSchema(commentReactions)
 export const commentReactionInsertSchema = createInsertSchema(commentReactions)
 export const commentReactionUpdateSchema = createUpdateSchema(commentReactions)
 
+
+
+
+//Monetization
+
+export const monetizationType = pgEnum("monetization_type",["purchase","snippet","payperminute"])
+
+export const monetization = pgTable("monetization",{
+    id: uuid("id").primaryKey().defaultRandom(),
+    title: text("title").notNull(),
+    description: text("description"),
+    solSeedId: serial("sol_seed_id"), //for seeds 
+    videoId: uuid("video_id").references(()=>videos.id,{onDelete:"cascade"}).notNull(),
+    type: monetizationType("monetization_type").notNull(),
+    cost: decimal("price",{precision:10,scale:2}).notNull(),
+    duration:decimal("duration"),
+    startTime:decimal("start_time"),
+    endTime:decimal("end_time"),
+    creatorKey:varchar("creator_key",{length:44}).notNull(),
+    createdAt:timestamp("created_at").notNull().defaultNow(),
+    updatedAt:timestamp("updated_at").notNull().defaultNow(),
+})
+
+export const monetizationRelations = relations(monetization,({one})=>({
+    video:one(videos,{
+        fields:[monetization.videoId],
+        references:[videos.id]
+    })
+}))
+
+export const monetizationSelectSchema = createSelectSchema(monetization)
+export const monetizationInsertSchema = createInsertSchema(monetization)
+export const monetizationUpdateSchema = createUpdateSchema(monetization)
 

@@ -1,0 +1,11 @@
+.wallet-adapter-button-trigger.wallet-adapter-button{
+   height: 40px;
+   background: transparent;
+   font-weight: 600;
+}
+
+.wallet-adapter-button-trigger.wallet-adapter-button:not([disabled]):hover{
+    background: rgba(0, 248, 248, 0.25);
+    color: #9BD4CD;
+}
+

@@ -43,12 +43,12 @@ export const SearchInput = () => {
 
     //add search functionality
     return (
-        <form className="flex relative w-full max-w-[600]" onSubmit={handleSearch}>
+        <form className="flex relative w-full max-w-[600] " onSubmit={handleSearch}>
             <div className=" relative w-full">
                 <Input 
                 type="text" 
                 placeholder="Search for products, categories, brands and more" 
-                className="w-full  pl-4 py-2 pr-12 rounded-l-full border focus:outline-none focus:border-blue-500"
+                className="w-full  pl-4 py-2 pr-12 rounded-l-full border border-dripcast_blue focus:outline-none text-dripcast focus:border-alice-blue bg-alice_blue/90"
                 value={value}
                 onChange={(e)=>setValue(e.target.value)}
                 />
@@ -65,7 +65,7 @@ export const SearchInput = () => {
             </div>
             <button type="submit" 
             disabled={!value.trim()}
-            className="bottom-0 px-5 bg-gray-100 border-l-0  rounded-r-full  border disabled:opacity-50 disabled:cursor-not-allowed ">
+            className="bottom-0 px-5 border-l-0 text-dripcast rounded-r-full border  border-dripcast_blue disabled:bg-alice_blue/60 disabled:cursor-not-allowed bg-alice_blue/90">
                 <SearchIcon className="size-5"/>
             </button>
         </form>

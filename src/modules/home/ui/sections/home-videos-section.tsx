@@ -14,6 +14,7 @@ const HomeVideosSectionSuspense = ({category_id}:HomeVideosSectionProps)=>{
     const [videos,videosQuery] = trpc.videos.getMany.useSuspenseInfiniteQuery({
         limit:INFINITE_QUERY_LIMIT,
         categoryId:category_id,
+        visibility:"public"
     },{
         getNextPageParam:lastPage=>lastPage.nextCursor,
     })
