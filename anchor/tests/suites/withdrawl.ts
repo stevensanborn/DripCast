@@ -43,14 +43,14 @@ export const withdrawlCreatorTestSuite = () => {
 
         const amount = 500;
         //calculate fee
-        let fee = amount * 0.01;
-        const minFee = new BN(program.idl.constants.find(c => c.name === ('MIN_TRANSACTION_FEE' as any))?.value || '0');
-        console.log("MIN FEE", minFee.toNumber());
+        // let fee = amount * 0.01;
+        // const minFee = new BN(program.idl.constants.find(c => c.name === ('MIN_TRANSACTION_FEE' as any))?.value || '0');
+        // console.log("MIN FEE", minFee.toNumber());
 
-        if(new BN(fee).lt(minFee)){
-            fee = minFee.toNumber();
-        }
-        console.log("FEE", fee);
+        // if(new BN(fee).lt(minFee)){
+        //     fee = minFee.toNumber();
+        // }
+        // console.log("FEE", fee);
         //do a withdrawl
         const tx = await program.methods.withdrawlCreator(
             new BN(amount),

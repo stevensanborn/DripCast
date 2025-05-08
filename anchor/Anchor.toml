@@ -6,16 +6,19 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-dripcast = "7Nnu3s1NGhjSnomnkv8yqtenaEHi5sjoKdwRCH5rJWMY"
+dripcast = "7mHNUhhpqGZWMyEwCEP1eGMktSDz2qYfU1UtFQo7ZBRc"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+cluster = "devnet"
+# cluster = "localnet"
 wallet = "../wallet/DRP89vhFSNTpLYJWTU4VBYjcxQ1bEGZ9qZEd3d68oee5.json"
 
 [scripts]
-# test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+init_dripcast = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 scripts/init.ts"
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.test.ts"
-# test = "node  --test tests/dripcast.test.ts"
+deploy_dev = "solana program deploy ./target/deploy/dripcast.so --program-id ./target/deploy/dripcast-keypair.json "
+upgrade_idl = "anchor idl upgrade 7mHNUhhpqGZWMyEwCEP1eGMktSDz2qYfU1UtFQo7ZBRc -f ./target/idl/dripcast.json"
+close_creator = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 scripts/closeCreator.ts"

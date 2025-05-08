@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.16.0",
+    "@coral-xyz/anchor": "^0.31.1",
     "@hookform/resolvers": "^5.0.1",
     "@mux/mux-node": "^11.0.2",
     "@mux/mux-player-react": "^3.3.4",

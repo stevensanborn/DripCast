@@ -24,6 +24,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { ArrowRightIcon } from "lucide-react"
 import { motion, useDragControls , animate, useMotionValue } from "framer-motion"
 import { cn } from "@/lib/utils"
+import { initializeMonetization, updateMonetizationOnChain } from "@/modules/solana/monetization"
+import { SolanaState } from "@/components/solana/solana-state"
 
 interface MonetizationFormProps {
     videoId: string
@@ -42,8 +44,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
 
     const refVideoPlayer = useRef<ReactPlayer>(null)
     const [duration, setDuration] = useState(0)
-    // const [startTime, setStartTime] = useState(0)
-    // const [endTime, setEndTime] = useState(1.0)
+    const [autoPlay, setAutoPlay] = useState(false)
     const insertMonetization = trpc.monetization.create.useMutation({
         onSuccess: () => {
             toast.success("Monetization created")
@@ -75,16 +76,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
     const endRef = useRef<HTMLDivElement>(null)
     const refProgressBar = useRef<HTMLDivElement>(null)
 
-    // const defaultVals = {
-    //     videoId: videoId,
-    //     type: type!,
-    //     title: "",
-    //     description: "",
-    //     cost: "0",
-    //     creatorKey: "",
-    //     startTime: "0",
-    //     endTime: undefined,
-    // }
+
     const formScheme = z.object({
         videoId: z.string().min(1),
         type: z.string().min(1),
@@ -119,16 +111,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                     console.log("endTime is greater than duration")
                     formCurrent.setValue("endTime", duration.toString())
                 }
-                // let startPos = Number(value.startTime) / duration * 100
-                // let endPos = (1.0 - Number(value.endTime) / duration) * 100
-                // if(value.endTime == "0"){
-                // endPos = 0
-                // }
-                // console.log(Math.round(startPos / duration * 100000) / 1000, Math.round(endPos / duration * 1000) / 1000)
-
-                // setStartPos(Math.round(startPos * 100) / 100)
-
-                // setEndPos(Math.round(endPos * 100) / 100)
+          
             }
         })
         return () => {
@@ -136,21 +119,20 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
         }
     }, [formCurrent, duration])
 
+    useEffect(() => {
+        handleX2.set((refBar.current?.clientWidth ?? 10) - 10)
+    },[refBar.current])
 
-    // const [formCurrent, setFormCurrent] = useState<UseFormReturn<z.infer<typeof monetizationInsertSchema>> | UseFormReturn<z.infer<typeof monetizationUpdateSchema>> | null>(null)
-    // useEffect(() => {
-    //     if (selectedMonetization) {
-    //         formCurrent.reset(selectedMonetization as z.infer<typeof formScheme>)
-    //     }
-    //     else {
-    //         formCurrent.reset(Object.assign({}, defaultVals))
-    //     }
-    // }, [selectedMonetization])
-
-    const onSubmit = (data: z.infer<typeof formScheme>) => {
+    const onSubmit = async (data: z.infer<typeof formScheme>) => {
         // console.log(data)
+        let m = data as typeof monetization.$inferSelect;
+            
+
         if (selectedMonetization) {
-            console.log(data)
+
+           let tx = await updateMonetizationOnChain(video,m)
+           toast.success("Monetization updated "+tx)
+
             updateMonetization.mutate({
                 ...data,
                 creatorKey: "",
@@ -169,9 +151,16 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
             })
         }
         else {
+
+           
+            let tx = await initializeMonetization(video,m); 
+            toast.success("Monetization initialized "+tx)
+          
+            
+            //insert monetization
             insertMonetization.mutate({
                 ...data,
-                creatorKey: "",
+                creatorKey: SolanaState.wallet?.publicKey?.toBase58() ?? "",
                 type: data.type as "purchase" | "snippet" | "payperminute"
             }, {
                 onSuccess: () => {
@@ -182,6 +171,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                     toast.error(error.message)
                 }
             })
+            onClose()
             // formCurrent.reset(Object.assign({}, defaultVals))
         }
     }
@@ -193,6 +183,12 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
             duration,
             ease: [0.42, 0, 0.58, 1], // cubic-bezier for easeInOut
             onUpdate: (latest) => element.parentElement?.scrollTo(latest, 0),
+            onComplete: () => {
+                console.log("onComplete", end)
+                if(end>0){
+                    setAutoPlay(true)
+                }
+            }
         });
     };
 
@@ -203,7 +199,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
 
                     <form onSubmit={formCurrent.handleSubmit(onSubmit)} className="w-full h-full">
 
-                        <div className="min-w-full flex-nowrap overflow-x-auto inline-flex justify-star  items-center overflow-hidden gap-x-4 min-h-full no-scrollbar">
+                        <div className="min-w-full flex-nowrap inline-flex justify-star  items-center overflow-hidden gap-x-4 min-h-full no-scrollbar">
                             <motion.div className={cn("w-auto min-w-full inline-block h-[80vh]", selectedMonetization ? "hidden" : "")} ref={refPage1}>
 
                                 <div className={cn("flex flex-col gap-2 justify-start items-start ")}>
@@ -233,10 +229,10 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
 
                                     <Button variant="outline" className="w-auto" onClick={(e) => {
                                         e.preventDefault()
-                                        // setMonetizationType(formCurrent.getValues("type") as "purchase" | "snippet" | "payperminute")
-                                        console.log(formCurrent.getValues("type"))
+                                        
                                         if (refPage2.current) {
                                             scrollToElementWithFramerMotion(refPage2.current);
+                                            
                                         }
                                     }}>Continue <ArrowRightIcon className="w-4 h-4" /></Button>
                                 </div>
@@ -260,7 +256,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                                                 setDuration(duration)
                                             }}
                                             controls={true}
-                                            autoPlay={true}
+                                            autoPlay={autoPlay}
                                         />
                                         <div className="w-full h-[10px] top-full mt-2 absolute bottom-0 left-0 right-0" 
                                         onMouseDown={() => {
@@ -298,7 +294,6 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                                                         }
                                                         refProgressBar.current.style.left = (left +5 )  + 'px'
                                                         refProgressBar.current.style.width = (handleX2.get() - left)  + 'px'
-                                                        console.log(handleX2.get())
                                                         if(duration > 0){
                                                             const percentage = left / width
                                                             const time = Math.round( duration * percentage *100) / 100
@@ -341,7 +336,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                                                  }
                                                }
                                              
-                                               className="absolute w-[10px] h-[10px] left-100 top-0 bg-red-500 rounded-lg cursor-pointer  border-white border-2" ></motion.div>
+                                               className="absolute w-[10px] h-[10px] left-0 top-0 bg-red-500 rounded-lg cursor-pointer  border-white border-2" ></motion.div>
 
 
                                         </div>
@@ -380,17 +375,23 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
 
                                     </div>
                                     <div className="flex flex-col gap-2 flex-1 ">
-                                        <div className="flex flex-row gap-2 flex-1 ">
-                                        <div className="flex flex-col gap-2 w-full">
+                                    <FormField control={formCurrent.control} name="cost" render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="text-xs text-foreground-muted">Set Price</FormLabel>
+                                                <FormControl  >
+                                                    <Input {...field} placeholder="Cost" type="number" className="w-32" />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )} />
+                                        
+                                        <div className="flex flex-row gap-2 flex-1 justify-start items-start">
+                                        <div className="flex flex-col gap-2 ">
                                             <FormField control={formCurrent.control} name="startTime" render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel className="text-xs text-foreground-muted">Start (secs)</FormLabel>
                                                     <FormControl>
-                                                        <Input {...field} placeholder="Start Time" value={field.value ?? ""} className="w-16" onChange={(e) => {
-                                                            if (e.target.value == "0") {
-                                                                field.onChange(0)
-                                                            }
-                                                        }} />
+                                                        <Input {...field} placeholder="Start Time" value={field.value ?? ""} className="w-16"  />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -398,7 +399,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                                             )} />
                                             
                                         </div>
-                                        <div className="flex flex-col gap-2 w-full">
+                                        <div className="flex flex-col gap-2  ml-5">
                                             {duration > 0 && (
                                                 <>
                                                     <FormField control={formCurrent.control} name="endTime" render={({ field }) => (
@@ -417,15 +418,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                                             )}
                                         </div>
                                         </div>
-                                        <FormField control={formCurrent.control} name="cost" render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="text-xs text-foreground-muted">Set Price</FormLabel>
-                                                <FormControl  >
-                                                    <Input {...field} placeholder="Cost" type="number" className="w-32" />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )} />
+                                       
                                     </div>
 
                                   
@@ -435,6 +428,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                                     {!selectedMonetization &&
                                     <Button variant="outline" onClick={(e) => {
                                         e.preventDefault()
+                                        setAutoPlay(false)
                                         if (refPage1.current) {
                                             scrollToElementWithFramerMotion(refPage1.current);
                                         }

@@ -8,11 +8,15 @@ import {
   useConnection,
   useWallet,
   WalletProvider,
+  AnchorWallet
 } from "@solana/wallet-adapter-react";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
+
 import { clusterApiUrl } from "@solana/web3.js";
 import { SolanaState } from "./solana-state";
+import { AnchorProvider } from "@coral-xyz/anchor";
+
 // import { UnsafeBurnerWalletAdapter } from "@solana/wallet-adapter-wallets";
 
 export default function AppWalletProvider({
@@ -21,7 +25,8 @@ export default function AppWalletProvider({
     children: React.ReactNode;
   }) {
     const network = WalletAdapterNetwork.Devnet;
-    const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+    const endpoint = "https://devnet.helius-rpc.com/?api-key=e6bc5c8f-3dd6-4bfb-9b3b-b198a19d7a65"
+    // useMemo(() => clusterApiUrl(network), [network]);
     const wallets = useMemo(
       () => [
     //     // manually add any legacy wallet adapters here
@@ -52,15 +57,21 @@ export default function AppWalletProvider({
   const SolanaStateCopier = () => {
     const  wallet  = useWallet();
     const { connection } = useConnection();
-
-   
-
+    const provider = useAnchorProvider();
     useEffect(() => {
       SolanaState.wallet = wallet;
       SolanaState.connection = connection;
-      
+      SolanaState.provider = provider;
+    //   SolanaState.provider = useAnchorProvider();
+    //   console.log("SolanaState.provider", SolanaState.provider)
     }, [wallet, connection]);
     return (
         <></>
     );
   };
+
+  export function useAnchorProvider() {
+    const { connection } = useConnection()
+    const wallet = useWallet()
+    return new AnchorProvider(connection, wallet as AnchorWallet, { commitment: 'confirmed' })
+  }

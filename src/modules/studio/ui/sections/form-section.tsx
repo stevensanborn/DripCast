@@ -29,6 +29,7 @@ import { MonetizationForm } from "@/modules/monetization/ui/components/monetizat
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Tooltip } from "@/components/ui/tooltip"
+import { closeMonetization } from "@/modules/solana/monetization"
 
 
 interface FormSectionProps {
@@ -200,7 +201,7 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
                     <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger>
-                    <Button size="icon" className="size-8 flex items-center justify-center rounded-full" onClick={()=>setShowMonetization(true)} ><PlusIcon className="size-4 "></PlusIcon></Button>
+                            <p className="size-8 bg-slate-50 text-black flex items-center justify-center rounded-full hover:opacity-70"  onClick={()=>setShowMonetization(true)} ><PlusIcon className="size-4 "></PlusIcon></p>
                     </TooltipTrigger>
                     <TooltipContent>
                         <p>Add Monetization</p>
@@ -238,7 +239,16 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
                                             <PencilIcon className="size-4 mr-2"></PencilIcon>
                                     Update
                                 </DropdownMenuItem>
-                                    <DropdownMenuItem className="cursor-pointer" onClick={()=>removeMonetization.mutate({id:monetization.id})}> 
+                                    <DropdownMenuItem className="cursor-pointer" onClick={async ()=>{
+                                        
+                                            let tx = await closeMonetization(video,monetization)
+                                            
+                                            removeMonetization.mutate({id:monetization.id})
+                                            
+                                            toast.success("Monetization closed "+tx)
+                                            
+                                        }
+                                        }> 
                                         <TrashIcon className="size-4 mr-2"></TrashIcon>
                                         Delete
                                     </DropdownMenuItem>

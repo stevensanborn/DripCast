@@ -19,9 +19,12 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/*": ["./src/*"],
+      "@/anchor/target/idl/dripcast.json": ["./anchor/target/idl/dripcast.json"],
+      "@/anchor/target/types/dripcast": ["./anchor/target/types/dripcast.ts"],
+      
+    },
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts","anchor/src/**/*.ts"],
   "exclude": ["node_modules","anchor"]
 }

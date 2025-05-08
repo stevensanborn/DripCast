@@ -9,7 +9,7 @@ mod errors;
 mod global;
 use instructions::*;
 
-declare_id!("7Nnu3s1NGhjSnomnkv8yqtenaEHi5sjoKdwRCH5rJWMY");
+declare_id!("7mHNUhhpqGZWMyEwCEP1eGMktSDz2qYfU1UtFQo7ZBRc");
 
 #[program]
 pub mod dripcast {
@@ -23,6 +23,10 @@ pub mod dripcast {
     // /* CREATOR FUNCTIONS */
     pub fn initialize_creator(ctx: Context<InitializeCreator>, user_id: String) -> Result<()> {
         ctx.accounts.initialize_creator(user_id,&ctx.bumps)
+    }
+
+    pub fn close_creator(ctx: Context<CloseCreator>) -> Result<()> {
+        ctx.accounts.close_creator()
     }
 
     // /* MONETIZATION FUNCTIONS */

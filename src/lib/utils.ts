@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import {createHash} from "node:crypto"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -38,4 +39,9 @@ export const getMonetizationType = (value:string) => {
 
 export const getMonetizationTypeValue = (name:string) => {
   return MONETIZATION_TYPES.find((type) => type.name === name)?.value;
+}
+
+
+export const getHexHash = (hash:string) => {
+  return  createHash('md5').update(hash).digest('hex');
 }

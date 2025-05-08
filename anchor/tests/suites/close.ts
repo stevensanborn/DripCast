@@ -34,4 +34,13 @@ export const closeTestSuite = () => {
             systemProgram: SystemProgram.programId
         })
   })
-    }
+
+  test("CLOSE CREATOR", async () => {
+    const tx = await program.methods.closeCreator()
+        .accountsStrict({
+            signer: context.ContentCreator.publicKey,
+            creator: context.ContentCreator.publicKey,
+            systemProgram: SystemProgram.programId
+        })
+  })
+}

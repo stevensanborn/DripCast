@@ -1,7 +1,7 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { Dripcast } from "../target/types/dripcast";
-import { PublicKey, LAMPORTS_PER_SOL, SystemProgram } from "@solana/web3.js";
+import { PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import DEVWALLET from "../../wallet/DRP89vhFSNTpLYJWTU4VBYjcxQ1bEGZ9qZEd3d68oee5.json";
 import { before, describe, test } from "node:test";
 import assert from "node:assert";
@@ -71,7 +71,6 @@ describe("dripcast", () => {
       console.log("GOT DRIPCAST ACCOUNT", pkey.toBase58());
       assert.strictEqual(dripcastAccountInfo.owner.toBase58(),dripSigner.publicKey.toBase58());
       console.log("VERIFIED OWNER");
-
       context.dripcast = pkey;
       
   });

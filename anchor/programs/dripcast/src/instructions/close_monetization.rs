@@ -6,6 +6,7 @@ pub struct CloseMonetization<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,  
     #[account(mut,
+        close = signer,
         seeds = [b"monetization", signer.key().as_ref(), monetization.content_id.as_bytes()],
         bump = monetization.bump)]
     pub monetization: Account<'info, Monetization>,
