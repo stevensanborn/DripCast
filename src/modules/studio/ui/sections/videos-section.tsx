@@ -42,8 +42,9 @@ const VideoSectionSkeleton = () => {
                             <TableHead>Status</TableHead>
                             <TableHead>Date</TableHead>
                             <TableHead  className="text-right ">Views</TableHead>
+                            <TableHead className="text-right">Comments</TableHead>
                             <TableHead className="text-right pr-6   ">Likes</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
+                            
                             
                         </TableRow>
                     </TableHeader>  
@@ -52,7 +53,6 @@ const VideoSectionSkeleton = () => {
                         {Array.from({length:5}).map((_,index)=>(
                             <TableRow key={index}>
                                 <TableCell  className="pl-6" >
-
                                     <div className="flex items-center gap-4">
                                         <Skeleton  className="h-20 w-36 " />
                                         <div className="flex flex-col gap-2">
@@ -78,8 +78,9 @@ const VideoSectionSkeleton = () => {
                                     <Skeleton className="h-4 w-16 pr-6" />
                                 </TableCell>
                                 <TableCell className="text-right">
-                                   <Skeleton className="h-4 w-16" />
-                                </TableCell> 
+                                    <Skeleton className="h-4 w-12 pr-6" />
+                                </TableCell>
+                               
                             </TableRow>
                         ))}
                     </TableBody>
@@ -114,7 +115,7 @@ const VideosSectionSuspense = ({userId,visibility}:VideosSectionProps) => {
                             <TableHead>Date</TableHead>
                             <TableHead  className="text-right ">Views</TableHead>
                             <TableHead className="text-right">Comments</TableHead>
-                            <TableHead className="text-right pr-6   ">Likes</TableHead>
+                            <TableHead className="text-right pr-6">Likes</TableHead>
                             
                         </TableRow>
                     </TableHeader>  
@@ -157,15 +158,14 @@ const VideosSectionSuspense = ({userId,visibility}:VideosSectionProps) => {
                                         <TableCell className="pl-6 text-right text-sm">
                                          {video.viewCount}
                                         </TableCell>
+                                        <TableCell className="pl-6 text-right text-sm">
+                                       -
+                                        </TableCell>
                                         
                                         <TableCell className="pl-6 text-right text-sm pr-6">
                                            {video.likeCount}
                                         </TableCell>
-                                        <TableCell className="pl-6 text-right text-sm">
-                                           <Link href={`studio/videos/${video.id}/monetization`} className="text-blue-500 hover:underline">
-                                            <Button variant="outline" size="sm"><Banknote className="size-4 mr-2"></Banknote> Monetize</Button>
-                                           </Link>
-                                        </TableCell>
+                                       
                                 </TableRow>
                                 </Link>
                                 

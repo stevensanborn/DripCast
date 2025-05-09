@@ -17,7 +17,7 @@ export const StudioNavbar = () => {
                     <Link prefetch  href="/" className="hidden md:block">
                     <div className="flex items-center gap-1 p-4">
                     <Image src="/logo.svg" alt="logo" width={20} height={20} className="relative bottom-[5px]" />
-                        <p className="text-xl font-semibold tracking-tight text-dripcast">Studio</p>
+                        <p className="text-xl font-semibold tracking-tight text-dripcast">Creator</p>
                     </div>
                     </Link>
                 </div>

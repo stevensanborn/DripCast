@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { monetization } from "@/db/schema"
-import { Form, FormField, FormLabel, FormMessage, FormControl, FormItem } from "@/components/ui/form"
+import { Form, FormField, FormLabel, FormMessage, FormControl, FormItem, FormDescription } from "@/components/ui/form"
 import { z } from "zod"
 import { trpc } from "@/trpc/client"
 import { toast } from "sonner"
@@ -21,9 +21,9 @@ import ReactPlayer from "react-player"
 // import { useSearchParams } from 'next/navigation'
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { ArrowRightIcon } from "lucide-react"
+import { ArrowRightIcon, Banknote, BanknoteIcon } from "lucide-react"
 import { motion, useDragControls , animate, useMotionValue } from "framer-motion"
-import { cn } from "@/lib/utils"
+import { cn, getMonetizationType } from "@/lib/utils"
 import { initializeMonetization, updateMonetizationOnChain } from "@/modules/solana/monetization"
 import { SolanaState } from "@/components/solana/solana-state"
 
@@ -45,6 +45,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
     const refVideoPlayer = useRef<ReactPlayer>(null)
     const [duration, setDuration] = useState(0)
     const [autoPlay, setAutoPlay] = useState(false)
+    const [hover, setHover] = useState(false)
     const insertMonetization = trpc.monetization.create.useMutation({
         onSuccess: () => {
             toast.success("Monetization created")
@@ -76,15 +77,23 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
     const endRef = useRef<HTMLDivElement>(null)
     const refProgressBar = useRef<HTMLDivElement>(null)
 
+    const  zodStartTime = z.string().min(1).refine((data) => {(data != "0")},{
+        message: "Start time must be greater than 0",
+    })
+
+    const zodCost = z.string().min(1).refine((data) => (data !== "0"),{
+        message: "Cost must be greater than 0",
+    })
 
     const formScheme = z.object({
         videoId: z.string().min(1),
         type: z.string().min(1),
         title: z.string().min(1),
-        cost: z.string().min(1),
+        cost: zodCost,
         description: z.string(),
-        startTime: z.string().min(1),
+        startTime:zodStartTime,
         endTime: z.string().min(0),
+        duration: z.string(),
         creatorKey: z.string(),
     })
 
@@ -97,6 +106,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
             cost: selectedMonetization?.cost ?? "0",
             startTime: selectedMonetization?.startTime ?? "0",
             endTime: selectedMonetization?.endTime ?? "0",
+            duration: selectedMonetization?.duration ?? "",
             creatorKey: selectedMonetization?.creatorKey ?? "",
         },
         resolver: zodResolver(formScheme)
@@ -135,7 +145,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
 
             updateMonetization.mutate({
                 ...data,
-                creatorKey: "",
+                creatorKey: SolanaState.wallet?.publicKey?.toBase58() ?? "",
                 type: data.type as "purchase" | "snippet" | "payperminute",
                 id: selectedMonetization.id
             }, {
@@ -194,7 +204,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
 
     return (
         <div className="w-full flex flex-col gap-2 items-start ">
-            
+                <div className="text-sm font-light text-gray-300"> [ { getMonetizationType(formCurrent.watch("type"))} ]</div>
                 <Form {...formCurrent}>
 
                     <form onSubmit={formCurrent.handleSubmit(onSubmit)} className="w-full h-full">
@@ -239,14 +249,20 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
 
 
                             </motion.div>
-                            <motion.div className="min-w-full max-w-4xl inline-block h-[80vh] overflow-y-auto no-scrollbar" ref={refPage2}
+                            <motion.div className="min-w-full max-w-4xl inline-block h-[80vh] overflow-y-auto no-scrollbar" 
+                                ref={refPage2}
                                 initial={{ opacity: 0, left: 100 }}
                                 whileInView={{ opacity: 1, left: 0 }}
                                 transition={{ duration: 0.5, delay: 0.5 }}
                             >
 
-                                <div className="flex items-center justify-center w-full my-2" >
-                                    <div className="max-h-[260px] h-[260px]   aspect-video relative mb-8 ">
+                                <div className="flex items-center justify-center w-full my-0" onMouseOver={() => {
+                                    console.log("mouse over")
+                                    setHover(true)
+                                }} onMouseOut={() => {
+                                    setHover(false) 
+                                }} >
+                                    <div className={`max-h-[200px] h-[200px]   aspect-video relative ${formCurrent.watch("type") === "payperminute" ? "mb-2 " : "mb-6"}`}>
                                         <ReactVideoPlayer
                                             videoId={videoId}
                                             playbackId={video.muxPlaybackId}
@@ -254,25 +270,27 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                                             ref={refVideoPlayer}
                                             onDuration={(duration) => {
                                                 setDuration(duration)
+                                                formCurrent.setValue("endTime",duration.toString())
                                             }}
                                             controls={true}
                                             autoPlay={autoPlay}
                                         />
-                                        <div className="w-full h-[10px] top-full mt-2 absolute bottom-0 left-0 right-0" 
-                                        onMouseDown={() => {
-                                            // dragControls.start(e as unknown as PointerEvent,{ snapToCursor: true })
-                                        }}>
+                                        <div className={`w-full  top-full duration-300 mt-2 absolute bottom-0 left-0 right-0 ${formCurrent.watch("type") === "payperminute" ? "hidden" : ""}`} 
+                                        style={{height: hover ? "30px" : "10px"}}
+                                        >
                                             
                                             <div className="absolute bottom-0 top-0 left-0 right-0 h-full" ref={refBar}  
                                                    >
-                                                <div className="h-[10px] bg-dripcast_blue absolute top-0 left-0 right-0 rounded-lg transition-all duration-100"  
-                                                ></div>
+                                                <div className={`h-full  bg-gradient-to-b  from-gray-500 to-gray-700 absolute top-0 left-0 right-0 rounded-md `}  
+                                                 
+                                                > </div>
                                             </div>
 
-                                            <div className="absolute bottom-0 top-0 left-0 right-0 h-[10px]" ref={refProgressBar} >
-                                                <div  className="h-[10px] bg-indian_red absolute top-0 left-0 w-full rounded-lg " ></div>
+                                            <div className="absolute bottom-0 top-0 left-0 right-0 h-full" ref={refProgressBar} >
+                                                <div  className={`h-full  bg-gradient-to-b  from-coral to-indian_red  absolute top-0 left-0 w-full rounded-md drop-shadow-md drop-shadow-black border-y-2 border-dripcast_blue text-xs flex items-center justify-center overflow-hidden `} >
+                                                    <BanknoteIcon className="w-4 h-4" />
+                                                </div>
                                             </div>
-
                                                
                                                <motion.div 
                                                ref={startRef}
@@ -304,7 +322,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                                                  }
                                                }
                                              
-                                               className="absolute w-[10px] h-[10px] left-0 top-0 bg-white rounded-lg cursor-pointer  border-white border-2" ></motion.div>
+                                               className="absolute w-[10px] h-full left-0 top-0 bg-dripcast_blue rounded-l-lg cursor-pointer  border-dripcast_blue border-[1px] drop-shadow-md drop-shadow-black" ></motion.div>
 
                                                <motion.div 
                                                ref={endRef}
@@ -336,7 +354,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                                                  }
                                                }
                                              
-                                               className="absolute w-[10px] h-[10px] left-0 top-0 bg-red-500 rounded-lg cursor-pointer  border-white border-2" ></motion.div>
+                                               className="absolute w-[10px] h-full left-0 top-0 bg-dripcast_blue rounded-r-lg cursor-pointer border-dripcast_blue border-[1px]  drop-shadow drop-shadow-black" ></motion.div>
 
 
                                         </div>
@@ -344,7 +362,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                                   
                                 </div>
 
-                                <div className="flex gap-x-4 justify-start items-start flex-wrap">
+                                <div className="flex gap-x-4 justify-start items-start flex-wrap p-2">
 
                                     <div className="flex flex-col gap-2 flex-1 ">
 
@@ -375,9 +393,14 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
 
                                     </div>
                                     <div className="flex flex-col gap-2 flex-1 ">
-                                    <FormField control={formCurrent.control} name="cost" render={({ field }) => (
+                                        <FormField control={formCurrent.control} name="cost" render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel className="text-xs text-foreground-muted">Set Price</FormLabel>
+                                                <FormDescription>
+                                                        {formCurrent.watch("type" ) ==="purchase" && <p>Set the price of the video</p>}
+                                                        {formCurrent.watch("type" ) ==="snippet" &&  <p>Set the price of the snippet</p>}
+                                                        {formCurrent.watch("type" ) ==="payperminute" &&  <p>Set the price of the video per minute</p>}
+                                                </FormDescription>
                                                 <FormControl  >
                                                     <Input {...field} placeholder="Cost" type="number" className="w-32" />
                                                 </FormControl>
@@ -385,7 +408,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                                             </FormItem>
                                         )} />
                                         
-                                        <div className="flex flex-row gap-2 flex-1 justify-start items-start">
+                                       <div className={cn(" flex-row gap-2   justify-start items-start ",  formCurrent.watch("type") !== "payperminute" ? "flex" : "hidden")}>
                                         <div className="flex flex-col gap-2 ">
                                             <FormField control={formCurrent.control} name="startTime" render={({ field }) => (
                                                 <FormItem>
@@ -399,26 +422,39 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                                             )} />
                                             
                                         </div>
-                                        <div className="flex flex-col gap-2  ml-5">
+
+
+                                        <div className={cn(" flex-col gap-2  ml-5 ",  formCurrent.watch("type") === "snippet" ? "flex" : "hidden")}>
                                             {duration > 0 && (
                                                 <>
                                                     <FormField control={formCurrent.control} name="endTime" render={({ field }) => (
                                                         <FormItem>
-                                                            <FormLabel className="text-xs text-foreground-muted">End  (secs)</FormLabel>
+                                                            <FormLabel className="text-xs text-foreground-muted">End (secs)</FormLabel>
                                                             <FormControl>
                                                                 <Input {...field} placeholder="End Time" value={field.value ?? duration} className="w-16" />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
                                                     )} />
-
-                                                 
-
                                                 </>
                                             )}
                                         </div>
+
+
                                         </div>
-                                       
+                                       <div className={cn(formCurrent.watch("type") === "payperminute" ? "hidden" : "")} >
+                                        <FormField control={formCurrent.control} name="duration" render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="text-xs text-foreground-muted">Duration</FormLabel>
+                                                <FormDescription>Set the duration of how long each purchase will be valid for. Leave empty for unlimited. </FormDescription>
+                                                <FormControl  >
+                                                    <Input {...field} placeholder="Duration" type="number" className="w-32" />
+                                                </FormControl>
+                                                <FormMessage />                                     
+                                            </FormItem>
+                                        )} />
+                                        </div>
+                                        
                                     </div>
 
                                   

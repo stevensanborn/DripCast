@@ -15,9 +15,12 @@ export default withUt({
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
 			dripcast:'darkslategrey',
+			darkslategray:'#2F4F4F',
 			dripcast_blue:'#90D4CD',
 			alice_blue:'#F0F8FF',
 			indian_red: '#CD5040',
+			coral:'#FF7F50',
+			brown: '#96705D',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
