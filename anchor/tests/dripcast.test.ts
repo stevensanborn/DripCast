@@ -25,7 +25,7 @@ describe("dripcast", () => {
 
   // let ContentCreator: Keypair;
   // let ContentConsumer: Keypair;
-  context.content1_id = "uuid_testid";
+  context.monetization1_id = "uuid_testid";
   // let payPerMinuteMonetization: PublicKey;
 
   before(async function() {
@@ -45,7 +45,7 @@ describe("dripcast", () => {
 
     context.ContentCreator = ContentCreator;
     context.ContentConsumer = ContentConsumer;
-    context.content1_id = context.content1_id;
+    context.monetization1_id = context.monetization1_id;
     context.connection = provider.connection;
 
   });

@@ -4,7 +4,7 @@ use crate::states::monetization::Monetization;
 use crate::errors::DripcastError;
 
 #[derive(Accounts)]
-#[instruction(content_id: String)]
+#[instruction(monetization_id: String)]
 pub struct InitializeMonetization<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
@@ -12,7 +12,7 @@ pub struct InitializeMonetization<'info> {
     #[account(init_if_needed,
         payer = signer,
         space = 8 + Monetization::INIT_SPACE,
-        seeds = [b"monetization", signer.key().as_ref(), content_id.as_bytes()],
+        seeds = [b"monetization", signer.key().as_ref(), monetization_id.as_bytes()],
         bump
     )]
     pub monetization: Account<'info, Monetization>,
@@ -23,7 +23,7 @@ pub struct InitializeMonetization<'info> {
 impl<'info> InitializeMonetization<'info> {
 
     pub fn initialize_monetization(&mut self,
-        content_id: String,
+        monetization_id: String,
         monetization_type: String,
         cost: u64,
         duration: u64,
@@ -33,8 +33,8 @@ impl<'info> InitializeMonetization<'info> {
     ) -> Result<()> {
         // Validate string lengths
         require!(
-            content_id.len() <= 36,
-            DripcastError::ContentIdTooLong
+            monetization_id.len() <= 36,
+            DripcastError::MonetizationIdTooLong
         );
         require!(
             monetization_type.len() <= 32,
@@ -49,7 +49,7 @@ impl<'info> InitializeMonetization<'info> {
         
         self.monetization.set_inner(Monetization {
             creator: self.signer.key(),
-            content_id,
+            monetization_id,
             monetization_type,
             cost,
             duration,

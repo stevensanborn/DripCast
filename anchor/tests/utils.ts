@@ -22,11 +22,11 @@ export const  airdrop = async (connection: any, address: any, amount = 100000000
 
 
 export const getMonetizationPDA = 
-(contentId: string, consumer: PublicKey, programId: PublicKey) => {
+(monetizationId: string, consumer: PublicKey, programId: PublicKey) => {
     const [pda, bump] = PublicKey.findProgramAddressSync(
         [anchor.utils.bytes.utf8.encode("monetization"),
         consumer.toBuffer(),
-        anchor.utils.bytes.utf8.encode(contentId)],
+        anchor.utils.bytes.utf8.encode(monetizationId)],
         programId
       );
       return [pda, bump] as [PublicKey, number];

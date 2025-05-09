@@ -8,7 +8,7 @@ use anchor_lang::prelude::*;
 pub struct Monetization {
     pub creator: Pubkey,
     #[max_len(36)]
-    pub content_id: String, //id of the content from database
+    pub monetization_id: String, //id of the content from database
     #[max_len(32)]
     pub monetization_type: String, //monetization scheme (Payper minute, snippet, etc)
     pub cost: u64, //cost of the content

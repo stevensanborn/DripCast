@@ -11,7 +11,7 @@ export const updateTestSuite = () => {
     
 
   test("UPDATE MONETIZATION", async () => {
-    const [pkey, _bump] = getMonetizationPDA(context.content1_id,context.ContentCreator.publicKey,program.programId);
+    const [pkey, _bump] = getMonetizationPDA(context.monetization1_id,context.ContentCreator.publicKey,program.programId);
     let monetizationAccountInfo = await program.account.monetization.fetch(pkey);
     assert.ok(monetizationAccountInfo)
     
@@ -45,7 +45,7 @@ export const updateTestSuite = () => {
   })
   //TEST UPDATE MONETIZATION STATE
   test("UPDATE MONETIZATION STATE", async () => {
-    // const [monetizationPDA, _bmp] = getMonetizationPDA(context.content1_id,context.ContentCreator.publicKey,program.programId);
+    // const [monetizationPDA, _bmp] = getMonetizationPDA(context.monetization1_id,context.ContentCreator.publicKey,program.programId);
     const [monetizationStatePDA, _bump] = getMonetizationStatePDA(
         context.payPerMinuteMonetization, 
         context.ContentConsumer.publicKey, 

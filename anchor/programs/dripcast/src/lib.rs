@@ -32,7 +32,7 @@ pub mod dripcast {
     // /* MONETIZATION FUNCTIONS */
     pub fn initialize_monetization(
         ctx: Context<InitializeMonetization>,
-        content_id: String, //id of the content from database
+        monetization_id: String, //id of the content from database
         monetization_type: String, //type of subscription 
         cost: u64,
         duration: u64,
@@ -40,7 +40,7 @@ pub mod dripcast {
         end_time: f32,
     ) -> Result<()> {
         ctx.accounts.initialize_monetization(
-            content_id,
+            monetization_id,
             monetization_type,
             cost,
             duration,

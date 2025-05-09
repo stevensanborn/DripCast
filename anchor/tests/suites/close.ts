@@ -23,7 +23,7 @@ export const closeTestSuite = () => {
   })
 
   test("CLOSE MONETIZATION", async () => {
-    const [pkey, _bump] = getMonetizationPDA(context.content1_id,context.ContentCreator.publicKey,program.programId);
+    const [pkey, _bump] = getMonetizationPDA(context.monetization1_id,context.ContentCreator.publicKey,program.programId);
     let monetizationAccountInfo = await program.account.monetization.fetch(pkey);
     assert.ok(monetizationAccountInfo)
 

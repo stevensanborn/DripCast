@@ -51,7 +51,7 @@ export const initializeTestSuite = () => {
     const end_time = 600.0;  // no end time
 
     const tx = await program.methods.initializeMonetization(
-      context.content1_id, 
+      context.monetization1_id, 
       monetization_type, 
       cost, 
       duration, 
@@ -69,12 +69,12 @@ export const initializeTestSuite = () => {
     //verify pda 
     console.log("Verifying monetization pda");
 
-    const [pkey, _bump] = getMonetizationPDA(context.content1_id,context.ContentCreator.publicKey,program.programId);
+    const [pkey, _bump] = getMonetizationPDA(context.monetization1_id,context.ContentCreator.publicKey,program.programId);
       let monetizationAccountInfo = await program.account.monetization.fetch(pkey);
       assert.ok(monetizationAccountInfo)
       console.log("GOT MONETIZATION ACCOUNT", pkey.toBase58());
       context.payPerMinuteMonetization = pkey;
-      assert.strictEqual(monetizationAccountInfo.contentId, context.content1_id);
+      assert.strictEqual(monetizationAccountInfo.monetizationId, context.monetization1_id);
       assert.strictEqual(monetizationAccountInfo.monetizationType, monetization_type);
       assert.strictEqual(monetizationAccountInfo.cost.toString(), cost.toString());
       assert.strictEqual(monetizationAccountInfo.duration.toString(), duration.toString());

@@ -7,7 +7,7 @@ pub struct UpdateMonetization<'info> {
     pub signer: Signer<'info>,
     #[account(
         mut,
-        seeds = [b"monetization", signer.key().as_ref(), monetization.content_id.as_bytes()],
+        seeds = [b"monetization", signer.key().as_ref(), monetization.monetization_id.as_bytes()],
         bump = monetization.bump,
         realloc =8+  Monetization::INIT_SPACE,
         realloc::payer = signer,

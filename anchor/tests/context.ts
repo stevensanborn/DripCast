@@ -8,7 +8,7 @@ export interface TestContext {
     ContentConsumer?: Keypair;
     payPerMinuteMonetization?: PublicKey;
     program?: Program<Dripcast>;
-    content1_id?: string;
+    monetization1_id?: string;
     dripcast?: PublicKey;
     connection?: Connection;
 }
