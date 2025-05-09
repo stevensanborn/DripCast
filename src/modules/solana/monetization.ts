@@ -34,10 +34,11 @@ export async function initializeMonetization(v:StudioGetOneOutput, m:typeof mone
 
     if(!accountInfo){
         //initialize creator
+        console.log("add initialize creator instruction to the transaction")
         transaction.add(await program.methods.initializeCreator(v.userId).accounts({
             signer: SolanaState.wallet.publicKey
          }).instruction())
-         console.log("add creator instruction")
+         
     }
 
     console.log("initialize monetization", m)
@@ -45,7 +46,7 @@ export async function initializeMonetization(v:StudioGetOneOutput, m:typeof mone
         getHexHash(m.videoId),
         m.type,
         new BN(m.cost),
-        m.duration,
+        new BN(m.duration?Number(m.duration):0),
         m.startTime,
         m.endTime,
     ).accounts({ signer: SolanaState.wallet.publicKey }).instruction()
@@ -114,7 +115,7 @@ export async function updateMonetizationOnChain(v:StudioGetOneOutput, m:typeof m
     console.log("update monetization", m)
     const pre = await program.methods.updateMonetization(
         new BN(m.cost),
-        new BN(m.duration),
+        new BN(m.duration?Number(m.duration):0),
         m.startTime,
         m.endTime,
         m.type,

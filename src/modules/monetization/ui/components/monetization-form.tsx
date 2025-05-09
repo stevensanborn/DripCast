@@ -23,7 +23,7 @@ import ReactPlayer from "react-player"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { ArrowRightIcon, Banknote, BanknoteIcon } from "lucide-react"
 import { motion, useDragControls , animate, useMotionValue } from "framer-motion"
-import { cn, getMonetizationType } from "@/lib/utils"
+import { cn, getHexHash, getMonetizationType } from "@/lib/utils"
 import { initializeMonetization, updateMonetizationOnChain } from "@/modules/solana/monetization"
 import { SolanaState } from "@/components/solana/solana-state"
 
@@ -67,7 +67,14 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
             toast.error(error.message)
         }
     })
-
+    const createTransaction = trpc.monetization.createTransaction.useMutation({
+        onSuccess: () => {
+            toast.success("Transaction created ")
+        },
+        onError: (error) => {
+            toast.error(error.message)
+        }
+    })
     const dragControls = useDragControls();
     const dragControls2 = useDragControls();
     const handleX = useMotionValue(0);
@@ -77,7 +84,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
     const endRef = useRef<HTMLDivElement>(null)
     const refProgressBar = useRef<HTMLDivElement>(null)
 
-    const  zodStartTime = z.string().min(1).refine((data) => {(data != "0")},{
+    const  zodStartTime = z.string().min(1).refine((data) => (data !== "0"),{
         message: "Start time must be greater than 0",
     })
 
@@ -162,10 +169,10 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
         }
         else {
 
-           
+           //save on chain
+           try{
             let tx = await initializeMonetization(video,m); 
-            toast.success("Monetization initialized "+tx)
-          
+           
             
             //insert monetization
             insertMonetization.mutate({
@@ -178,11 +185,24 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                     onClose()
                 },
                 onError: (error) => {
-                    toast.error(error.message)
+                    console.log(error)
+                    toast.error("Error creating monetization")
                 }
             })
-            onClose()
+
+            //create transaction
+            createTransaction.mutate({
+                monetizationId: m.id,
+                transactionId: tx
+            })
+            
+            
             // formCurrent.reset(Object.assign({}, defaultVals))
+           }
+           catch(error:any){
+            console.log(error)
+            toast.error("Error initializing monetization")
+           }
         }
     }
     const scrollToElementWithFramerMotion = (element: HTMLElement, duration = 0.8) => {
@@ -288,7 +308,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
 
                                             <div className="absolute bottom-0 top-0 left-0 right-0 h-full" ref={refProgressBar} >
                                                 <div  className={`h-full  bg-gradient-to-b  from-coral to-indian_red  absolute top-0 left-0 w-full rounded-md drop-shadow-md drop-shadow-black border-y-2 border-dripcast_blue text-xs flex items-center justify-center overflow-hidden `} >
-                                                    <BanknoteIcon className="w-4 h-4" />
+                                                    
                                                 </div>
                                             </div>
                                                

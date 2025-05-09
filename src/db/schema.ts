@@ -262,7 +262,7 @@ export const monetization = pgTable("monetization",{
     id: uuid("id").primaryKey().defaultRandom(),
     title: text("title").notNull(),
     description: text("description"),
-    solSeedId: serial("sol_seed_id"), //for seeds 
+    txId: varchar("transaction_id",{length:64}),
     videoId: uuid("video_id").references(()=>videos.id,{onDelete:"cascade"}).notNull(),
     type: monetizationType("monetization_type").notNull(),
     cost: decimal("price",{precision:10,scale:2}).notNull(),
@@ -285,3 +285,22 @@ export const monetizationSelectSchema = createSelectSchema(monetization)
 export const monetizationInsertSchema = createInsertSchema(monetization)
 export const monetizationUpdateSchema = createUpdateSchema(monetization)
 
+
+export const monetizationTransactions = pgTable("monetization_transactions",{
+    id: uuid("id").primaryKey().defaultRandom(),
+    transactionId: varchar("transaction_id",{length:64}).notNull(),
+    monetizationId: uuid("monetization_id").references(()=>monetization.id,{onDelete:"cascade"}).notNull(),
+    createdAt:timestamp("created_at").notNull().defaultNow(),
+    updatedAt:timestamp("updated_at").notNull().defaultNow(),
+})
+
+export const monetizationTransactionRelations = relations(monetizationTransactions,({one})=>({
+    monetization:one(monetization,{
+        fields:[monetizationTransactions.monetizationId],
+        references:[monetization.id]
+    })
+}))
+
+export const monetizationTransactionSelectSchema = createSelectSchema(monetizationTransactions)
+export const monetizationTransactionInsertSchema = createInsertSchema(monetizationTransactions)
+export const monetizationTransactionUpdateSchema = createUpdateSchema(monetizationTransactions)
