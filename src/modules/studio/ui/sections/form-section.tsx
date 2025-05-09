@@ -218,13 +218,13 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
                             <div key={monetization.id} 
                                 className="flex flex-col items-start justify-start border border-dashed rounded-md border-neutral-400 h-[84px] w-[153px] p-2 relative">
                                 <p className="text-xs line-clamp-2 font-bold">{
-                                monetization.title
+                                    monetization.title
                                 }</p>
                                 <p className="text-xs text-muted-foreground">{
-                                getMonetizationType(monetization.type)
+                                    getMonetizationType(monetization.type)
                                 }</p>
                                 <p className="text-xs">{
-                                monetization.cost
+                                    monetization.cost
                                 }</p>
                         <div className="absolute top-1 right-1">
                         <DropdownMenu >

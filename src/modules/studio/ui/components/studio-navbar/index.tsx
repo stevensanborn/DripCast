@@ -5,7 +5,7 @@ import { AuthButton } from "@/modules/auth/ui/components/auth-button"
 import { StudioUploadModal } from "../studio-upload-modal"
 
 import AppWalletProvider from "@/components/solana/provider"
-import { WalletButton } from "@/components/solana/wallet-button"
+import { DripCastMultiButton } from "@/components/solana/wallet-button"
 
 export const StudioNavbar = () => {
 
@@ -27,7 +27,7 @@ export const StudioNavbar = () => {
                  </div>
                  <div>
                     <AppWalletProvider>
-                        <WalletButton />
+                        <DripCastMultiButton />
                     </AppWalletProvider>
                  </div>
                  <div className="flex-shrink-0 items-center flex gap-4"> 
