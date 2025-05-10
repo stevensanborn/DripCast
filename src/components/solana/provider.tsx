@@ -14,7 +14,9 @@ import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 
 import { SolanaState } from "./solana-state";
 import { AnchorProvider } from "@coral-xyz/anchor";
-
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
+import { clusterApiUrl } from "@solana/web3.js";
 // import { UnsafeBurnerWalletAdapter } from "@solana/wallet-adapter-wallets";
 
 export default function AppWalletProvider({
@@ -22,16 +24,18 @@ export default function AppWalletProvider({
   }: {
     children: React.ReactNode;
   }) {
-    // const network = WalletAdapterNetwork.Devnet;
+    const network = WalletAdapterNetwork.Devnet;
     const endpoint = "https://devnet.helius-rpc.com/?api-key=e6bc5c8f-3dd6-4bfb-9b3b-b198a19d7a65"
-    // useMemo(() => clusterApiUrl(network), [network]);
+    useMemo(() => clusterApiUrl(network), [network]);
     const wallets = useMemo(
       () => [
     //     // manually add any legacy wallet adapters here
     //     // new UnsafeBurnerWalletAdapter(),
+    new PhantomWalletAdapter(),
+    new SolflareWalletAdapter(),
       ],
-      []
-    // //   [network], unecessary dependency
+    //   []
+      [network],// unecessary dependency
     );
    
     // useMemo(()=>{

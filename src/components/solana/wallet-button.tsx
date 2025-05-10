@@ -1,5 +1,5 @@
 "use client"
-
+import dynamic from 'next/dynamic';
 import { ButtonProps } from "../ui/button";
 import { BaseWalletMultiButton } from "@solana/wallet-adapter-react-ui";
 // import  {BaseWalletConnectionButton} from "@solana/wallet-adapter-react-ui/src/BaseWalletConnectionButton.tsx"
@@ -7,7 +7,7 @@ import { BaseWalletMultiButton } from "@solana/wallet-adapter-react-ui";
 export const WalletButton = () => {
     return (
         
-            <DripCastMultiButton />
+            <DripCastMultiButton labels={LABELS} />
         
     )
 }
@@ -24,7 +24,10 @@ const LABELS = {
     'no-wallet': 'Select Wallet',
 } as const;
 
-export function DripCastMultiButton(props: ButtonProps) {
-    return <BaseWalletMultiButton {...props} labels={LABELS} />;
-}
+const DripCastMultiButton = dynamic(() => import("@solana/wallet-adapter-react-ui").then(mod => mod.BaseWalletMultiButton), { ssr: false });
+
+// export function DripCastMultiButton(props: ButtonProps) {
+
+//     return <BaseWalletMultiButton {...props} labels={LABELS} />;
+// }
 
