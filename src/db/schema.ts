@@ -288,7 +288,7 @@ export const monetizationUpdateSchema = createUpdateSchema(monetization)
 
 export const monetizationTransactions = pgTable("monetization_transactions",{
     id: uuid("id").primaryKey().defaultRandom(),
-    transactionId: varchar("transaction_id",{length:64}).notNull(),
+    transactionId: varchar("transaction_id",{length:100}).notNull(),
     monetizationId: uuid("monetization_id").references(()=>monetization.id,{onDelete:"cascade"}).notNull(),
     createdAt:timestamp("created_at").notNull().defaultNow(),
     updatedAt:timestamp("updated_at").notNull().defaultNow(),
