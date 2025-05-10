@@ -77,7 +77,7 @@ export async function getMonetizationAddress(creatorPublicKey:PublicKey, videoId
     
     const [pkey] : [PublicKey, number] = PublicKey.findProgramAddressSync(
             [Buffer.from("monetization"), creatorPublicKey.toBuffer(), Buffer.from(videoId)], program.programId);
-    console.log("pkey + ", pkey.toBase58())
+    console.log("pkey ", pkey.toBase58())
     return pkey;
 
     
