@@ -19,9 +19,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@anchor/target/idl/*": ["./anchor/target/idl/*"],
-      "@anchor/target/types/*": ["./anchor/target/types/*"],
+      "@/*": ["./src/*"]
       
     },
   },

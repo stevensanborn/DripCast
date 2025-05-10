@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "copy-anchor-files": "node scripts/copy-anchor-files.js",
     "dev": "next dev --turbopack",
     "dev:webhook": "ngrok http --url certain-slightly-herring.ngrok-free.app 3000",
     "dev:all": " concurrently \"bun run dev\" \"bun run dev:webhook\"",
