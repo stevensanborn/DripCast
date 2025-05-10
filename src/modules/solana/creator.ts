@@ -3,7 +3,6 @@ import { useAnchorProvider } from "@/components/solana/provider";
 import {users } from "@/db/schema"
 import { PublicKey, VersionedTransaction } from "@solana/web3.js";
 import { Transaction } from "@solana/web3.js";
-import { getHexHash } from "@/lib/utils";
 import { AnchorProvider } from "@coral-xyz/anchor";
 
 export async function initializeCreator(creatorId:string) {

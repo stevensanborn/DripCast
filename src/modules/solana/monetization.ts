@@ -1,5 +1,3 @@
-
-
 import { getBasicProgram, SolanaState } from "@/components/solana/solana-state";
 import { VersionedTransaction, PublicKey } from "@solana/web3.js";
 import { Transaction } from "@solana/web3.js";
@@ -43,7 +41,7 @@ export async function initializeMonetization(v:StudioGetOneOutput, m:typeof mone
 
     console.log("initialize monetization", m)
     const pre = await program.methods.initializeMonetization(
-        getHexHash(m.id),
+        await getHexHash(m.id),
         m.type,
         new BN(m.cost),
         new BN(m.duration?Number(m.duration):0),
@@ -99,7 +97,7 @@ export async function updateMonetizationOnChain(v:StudioGetOneOutput, m:typeof m
     }
     console.log("id", m.id)
     const connection = SolanaState.connection!;
-    const monetizationAddress = await getMonetizationAddress(SolanaState.wallet.publicKey, getHexHash(m.id));
+    const monetizationAddress = await getMonetizationAddress(SolanaState.wallet.publicKey, await getHexHash(m.id));
     
     const accountInfo = await connection!.getAccountInfo(monetizationAddress);
     
@@ -154,7 +152,7 @@ export async function closeMonetization(v:StudioGetOneOutput, m:typeof monetizat
     }
     
     const connection = SolanaState.connection!;
-    const monetizationAddress = await getMonetizationAddress(SolanaState.wallet.publicKey, getHexHash(m.id));
+    const monetizationAddress = await getMonetizationAddress(SolanaState.wallet.publicKey, await getHexHash(m.id));
     const accountInfo = await connection!.getAccountInfo(monetizationAddress);
     
     if(!accountInfo){
