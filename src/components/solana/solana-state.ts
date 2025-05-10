@@ -1,8 +1,8 @@
 
 import {  WalletContextState } from "@solana/wallet-adapter-react";
 import { Connection } from "@solana/web3.js";
-import  DRIPCAST_IDL  from "@/anchor/target/idl/dripcast.json";
-import { Dripcast } from '@/anchor/target/types/dripcast'
+import  DRIPCAST_IDL  from "@anchor/target/idl/dripcast.json";
+import { Dripcast } from '@anchor/target/types/dripcast'
 
 // Here we export some useful types and functions for interacting with the Anchor program.
 import { AnchorProvider, Program } from '@coral-xyz/anchor'
