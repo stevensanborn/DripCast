@@ -41,7 +41,7 @@ export async function initializeMonetization(v:StudioGetOneOutput, m:typeof mone
 
     console.log("initialize monetization", m)
     const pre = await program.methods.initializeMonetization(
-        await getHexHash(m.id),
+        getHexHash(m.id),
         m.type,
         new BN(m.cost),
         new BN(m.duration?Number(m.duration):0),
@@ -75,7 +75,7 @@ export async function getMonetizationAddress(creatorPublicKey:PublicKey, videoId
     const program = getBasicProgram(provider);
     // console.log("program", program)
     
-    const [pkey, _bump] : [PublicKey, number] = PublicKey.findProgramAddressSync(
+    const [pkey] : [PublicKey, number] = PublicKey.findProgramAddressSync(
             [Buffer.from("monetization"), creatorPublicKey.toBuffer(), Buffer.from(videoId)], program.programId);
     console.log("pkey + ", pkey.toBase58())
     return pkey;
@@ -152,7 +152,7 @@ export async function closeMonetization(v:StudioGetOneOutput, m:typeof monetizat
     }
     
     const connection = SolanaState.connection!;
-    const monetizationAddress = await getMonetizationAddress(SolanaState.wallet.publicKey, await getHexHash(m.id));
+    const monetizationAddress = await getMonetizationAddress(SolanaState.wallet.publicKey, await getHexHash(m.id) );
     const accountInfo = await connection!.getAccountInfo(monetizationAddress);
     
     if(!accountInfo){
@@ -164,7 +164,7 @@ export async function closeMonetization(v:StudioGetOneOutput, m:typeof monetizat
     const { blockhash } = await connection.getLatestBlockhash();
     const transaction = new Transaction();
 
-    console.log("close monetization", m)
+    // console.log("close monetization", m)
     const pre = await program.methods.closeMonetization().accounts({ 
         signer: SolanaState.wallet.publicKey,
         monetization: monetizationAddress

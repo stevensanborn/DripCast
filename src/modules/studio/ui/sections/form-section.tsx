@@ -242,11 +242,12 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
                                     <DropdownMenuItem className="cursor-pointer" onClick={async ()=>{
 
                                             try{
-                                            let tx = await closeMonetization(video,monetization)
+                                            const tx = await closeMonetization(video,monetization)
                                             toast.success("Monetization closed "+tx)
                                             }
-                                            catch(e:any){
-                                                toast.error(e.message)
+                                            catch(e: Error | unknown){
+                                                const error = e instanceof Error ? e : new Error('An unknown error occurred');
+                                                toast.error(error.message)
                                             }
                                             removeMonetization.mutate({id:monetization.id})
                                             

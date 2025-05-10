@@ -1,9 +1,7 @@
 import { getBasicProgram, SolanaState } from "@/components/solana/solana-state";
-import { useAnchorProvider } from "@/components/solana/provider";
-import {users } from "@/db/schema"
 import { PublicKey, VersionedTransaction } from "@solana/web3.js";
 import { Transaction } from "@solana/web3.js";
-import { AnchorProvider } from "@coral-xyz/anchor";
+
 
 export async function initializeCreator(creatorId:string) {
 
@@ -63,7 +61,7 @@ export function getCreatorAddress(creatorPublicKey:PublicKey){
     const program = getBasicProgram(provider);
     // console.log("program", program)
     
-    const [pkey, _bump] : [PublicKey, number] = PublicKey.findProgramAddressSync(
+    const [pkey] : [PublicKey, number] = PublicKey.findProgramAddressSync(
             [Buffer.from("creator"),creatorPublicKey.toBuffer()], program.programId);
     console.log("pkey + ", pkey.toBase58())
     return pkey;
@@ -78,7 +76,7 @@ export async function getCreatorAccountInfo(creatorPublicKey:PublicKey){
 }
 
 
-export async function closeCreator(creatorPublicKey:PublicKey){
+export async function closeCreator(){
 
 
     if(!SolanaState.connection){

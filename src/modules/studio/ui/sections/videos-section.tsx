@@ -10,9 +10,8 @@ import Link from "next/link";
 import { VideoThumbnail } from "@/modules/videos/ui/components/video-thumbnail";
 import { snakeCaseToTitleCase } from "@/lib/utils";
 import { format } from "date-fns";
-import { Banknote, CircleCheckIcon, LockIcon } from "lucide-react";
+import { CircleCheckIcon, LockIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
 
 interface VideosSectionProps{
     userId:string

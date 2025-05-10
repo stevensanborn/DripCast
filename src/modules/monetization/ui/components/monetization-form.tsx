@@ -21,12 +21,11 @@ import ReactPlayer from "react-player"
 // import { useSearchParams } from 'next/navigation'
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { ArrowRightIcon, Banknote, BanknoteIcon } from "lucide-react"
+import { ArrowRightIcon } from "lucide-react"
 import { motion, useDragControls , animate, useMotionValue } from "framer-motion"
 import { cn, getMonetizationType } from "@/lib/utils"
 import { initializeMonetization, updateMonetizationOnChain } from "@/modules/solana/monetization"
 import { SolanaState } from "@/components/solana/solana-state"
-import { sleep } from "@trpc/server/unstable-core-do-not-import"
 
 interface MonetizationFormProps {
     videoId: string
@@ -77,28 +76,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
         }
     })
 
-    const onSuccessCreateMonetization = async ( m: typeof monetization.$inferSelect) => {
-        console.log(m)
-        // insertMonetization.mutate({
-        //     ...m,
-        //     duration: m.duration ?? "0",
-        //     creatorKey: SolanaState.wallet?.publicKey?.toBase58() ?? "",
-        //     type: m.type as "purchase" | "snippet" | "payperminute"
-        // })
-        
-            // console.log("monetizationId", monetizationId)
-            
-            // //save on chain
-            // let tx = await initializeMonetization(video,m); 
-
-            // //create transaction
-            // createTransaction.mutate({
-            //     monetizationId: monetizationId,
-            //     transactionId: tx
-            // })
-
-            
-    }
+   
     const dragControls = useDragControls();
     const dragControls2 = useDragControls();
     const handleX = useMotionValue(0);
@@ -146,7 +124,6 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
     // listen to the startTime and endTime
     useEffect(() => {
         const { unsubscribe } = formCurrent.watch((value) => {
-            console.log(value)
             if (duration > 0) {
                 if(Number(value.endTime) > duration){
                     console.log("endTime is greater than duration")
@@ -162,15 +139,15 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
 
     useEffect(() => {
         handleX2.set((refBar.current?.clientWidth ?? 10) - 10)
-    },[refBar.current])
+    },[handleX2])
 
     const onSubmit = async (data: z.infer<typeof formScheme>) => {
         // console.log(data)
-        let m = data as typeof monetization.$inferSelect;
+        const m = data as typeof monetization.$inferSelect;
        
         if (selectedMonetization) {
             console.log("updating monetization ",m)
-           let tx = await updateMonetizationOnChain(video,{...m,id:selectedMonetization.id})
+           const tx = await updateMonetizationOnChain(video,{...m,id:selectedMonetization.id})
            toast.success("Monetization updating...... "+tx)
 
             updateMonetization.mutate({
@@ -200,7 +177,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                 type: m.type as "purchase" | "snippet" | "payperminute"
             },{
                 onSuccess: (data) => {
-                    let monetizationId = data[0].id
+                    const monetizationId = data[0].id
                     console.log("monetizationId", monetizationId)
                     
             // //save on chain

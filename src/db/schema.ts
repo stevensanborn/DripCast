@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, uniqueIndex, pgEnum, foreignKey, doublePrecision, varchar, decimal, serial } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, uniqueIndex, pgEnum, foreignKey, doublePrecision, varchar, decimal } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from "drizzle-zod";
 import { primaryKey } from "drizzle-orm/pg-core";

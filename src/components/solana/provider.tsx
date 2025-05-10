@@ -10,10 +10,8 @@ import {
   WalletProvider,
   AnchorWallet
 } from "@solana/wallet-adapter-react";
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 
-import { clusterApiUrl } from "@solana/web3.js";
 import { SolanaState } from "./solana-state";
 import { AnchorProvider } from "@coral-xyz/anchor";
 
@@ -24,7 +22,7 @@ export default function AppWalletProvider({
   }: {
     children: React.ReactNode;
   }) {
-    const network = WalletAdapterNetwork.Devnet;
+    // const network = WalletAdapterNetwork.Devnet;
     const endpoint = "https://devnet.helius-rpc.com/?api-key=e6bc5c8f-3dd6-4bfb-9b3b-b198a19d7a65"
     // useMemo(() => clusterApiUrl(network), [network]);
     const wallets = useMemo(
@@ -64,7 +62,7 @@ export default function AppWalletProvider({
       SolanaState.provider = provider;
     //   SolanaState.provider = useAnchorProvider();
     //   console.log("SolanaState.provider", SolanaState.provider)
-    }, [wallet, connection]);
+    }, [wallet, connection,provider]);
     return (
         <></>
     );
