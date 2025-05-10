@@ -1,0 +1,1016 @@
+{
+  "address": "7mHNUhhpqGZWMyEwCEP1eGMktSDz2qYfU1UtFQo7ZBRc",
+  "metadata": {
+    "name": "dripcast",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor for DripCast!"
+  },
+  "instructions": [
+    {
+      "name": "close_creator",
+      "discriminator": [
+        162,
+        202,
+        231,
+        110,
+        245,
+        197,
+        79,
+        25
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "creator",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  114,
+                  101,
+                  97,
+                  116,
+                  111,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "close_monetization",
+      "discriminator": [
+        227,
+        202,
+        78,
+        85,
+        24,
+        175,
+        107,
+        230
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "monetization",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  110,
+                  101,
+                  116,
+                  105,
+                  122,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              },
+              {
+                "kind": "account",
+                "path": "monetization.monetization_id",
+                "account": "Monetization"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "close_monetization_state",
+      "discriminator": [
+        239,
+        76,
+        162,
+        165,
+        17,
+        0,
+        196,
+        14
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "monetization_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  110,
+                  101,
+                  116,
+                  105,
+                  122,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "monetization_state.monetization",
+                "account": "MonetizationState"
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_creator",
+      "discriminator": [
+        29,
+        153,
+        44,
+        99,
+        52,
+        172,
+        81,
+        115
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "creator",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  114,
+                  101,
+                  97,
+                  116,
+                  111,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "user_id",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "initialize_dripcast",
+      "discriminator": [
+        215,
+        111,
+        35,
+        211,
+        74,
+        70,
+        195,
+        19
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "dripcast",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  114,
+                  105,
+                  112,
+                  99,
+                  97,
+                  115,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_monetization",
+      "discriminator": [
+        20,
+        79,
+        171,
+        17,
+        78,
+        133,
+        249,
+        16
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "monetization",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  110,
+                  101,
+                  116,
+                  105,
+                  122,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              },
+              {
+                "kind": "arg",
+                "path": "monetization_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "monetization_id",
+          "type": "string"
+        },
+        {
+          "name": "monetization_type",
+          "type": "string"
+        },
+        {
+          "name": "cost",
+          "type": "u64"
+        },
+        {
+          "name": "duration",
+          "type": "u64"
+        },
+        {
+          "name": "start_time",
+          "type": "f32"
+        },
+        {
+          "name": "end_time",
+          "type": "f32"
+        }
+      ]
+    },
+    {
+      "name": "initialize_monetization_state",
+      "discriminator": [
+        241,
+        54,
+        135,
+        11,
+        47,
+        215,
+        15,
+        37
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "monetization_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  110,
+                  101,
+                  116,
+                  105,
+                  122,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "monetization"
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "monetization",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "transfer_monetization_state",
+      "discriminator": [
+        81,
+        36,
+        36,
+        151,
+        57,
+        191,
+        255,
+        204
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "monetization_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  110,
+                  101,
+                  116,
+                  105,
+                  122,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "monetization_state.monetization",
+                "account": "MonetizationState"
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "creator",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  114,
+                  101,
+                  97,
+                  116,
+                  111,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "creator.owner",
+                "account": "Creator"
+              }
+            ]
+          }
+        },
+        {
+          "name": "dripcast",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  114,
+                  105,
+                  112,
+                  99,
+                  97,
+                  115,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "update_monetization",
+      "discriminator": [
+        193,
+        148,
+        141,
+        86,
+        33,
+        59,
+        216,
+        225
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "monetization",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  110,
+                  101,
+                  116,
+                  105,
+                  122,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              },
+              {
+                "kind": "account",
+                "path": "monetization.monetization_id",
+                "account": "Monetization"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": {
+            "option": "u64"
+          }
+        },
+        {
+          "name": "duration",
+          "type": {
+            "option": "u64"
+          }
+        },
+        {
+          "name": "start_time",
+          "type": {
+            "option": "f32"
+          }
+        },
+        {
+          "name": "end_time",
+          "type": {
+            "option": "f32"
+          }
+        },
+        {
+          "name": "monetization_type",
+          "type": {
+            "option": "string"
+          }
+        }
+      ]
+    },
+    {
+      "name": "update_monetization_state",
+      "discriminator": [
+        184,
+        190,
+        8,
+        183,
+        154,
+        177,
+        121,
+        115
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "monetization_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  110,
+                  101,
+                  116,
+                  105,
+                  122,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "monetization_state.monetization",
+                "account": "MonetizationState"
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "withdrawl_creator",
+      "discriminator": [
+        238,
+        3,
+        215,
+        136,
+        164,
+        177,
+        144,
+        151
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "creator",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  114,
+                  101,
+                  97,
+                  116,
+                  111,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "creator.owner",
+                "account": "Creator"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "withdrawl_dripcast",
+      "discriminator": [
+        237,
+        87,
+        185,
+        155,
+        85,
+        242,
+        85,
+        50
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "dripcast",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  114,
+                  105,
+                  112,
+                  99,
+                  97,
+                  115,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Creator",
+      "discriminator": [
+        237,
+        37,
+        233,
+        153,
+        165,
+        132,
+        54,
+        103
+      ]
+    },
+    {
+      "name": "Dripcast",
+      "discriminator": [
+        176,
+        243,
+        249,
+        45,
+        170,
+        163,
+        137,
+        252
+      ]
+    },
+    {
+      "name": "Monetization",
+      "discriminator": [
+        47,
+        228,
+        231,
+        251,
+        114,
+        122,
+        195,
+        216
+      ]
+    },
+    {
+      "name": "MonetizationState",
+      "discriminator": [
+        200,
+        20,
+        60,
+        67,
+        225,
+        14,
+        25,
+        200
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "MonetizationIdTooLong",
+      "msg": "Content ID must be 36 characters or less"
+    },
+    {
+      "code": 6001,
+      "name": "MonetizationTypeTooLong",
+      "msg": "Monetization type must be 32 characters or less"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidTimeRange",
+      "msg": "Invalid time range: end time must be greater than start time and start time must be non-negative"
+    },
+    {
+      "code": 6003,
+      "name": "UserIdTooLong",
+      "msg": "User ID must be 36 characters or less"
+    },
+    {
+      "code": 6004,
+      "name": "InsufficientBalance",
+      "msg": "Insufficient balance"
+    }
+  ],
+  "types": [
+    {
+      "name": "Creator",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user_id",
+            "type": "string"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Dripcast",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "dripcast_name",
+            "type": "string"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Monetization",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "monetization_id",
+            "type": "string"
+          },
+          {
+            "name": "monetization_type",
+            "type": "string"
+          },
+          {
+            "name": "cost",
+            "type": "u64"
+          },
+          {
+            "name": "duration",
+            "type": "u64"
+          },
+          {
+            "name": "start_time",
+            "type": "f32"
+          },
+          {
+            "name": "end_time",
+            "type": "f32"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MonetizationState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "monetization",
+            "type": "pubkey"
+          },
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "u64"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ],
+  "constants": [
+    {
+      "name": "MIN_TRANSACTION_FEE",
+      "type": "u64",
+      "value": "75000"
+    }
+  ]
+}
