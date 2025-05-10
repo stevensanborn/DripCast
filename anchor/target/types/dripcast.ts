@@ -11,7 +11,7 @@ export type Dripcast = {
     "name": "dripcast",
     "version": "0.1.0",
     "spec": "0.1.0",
-    "description": "Created with Anchor"
+    "description": "Created with Anchor for DripCast!"
   },
   "instructions": [
     {
