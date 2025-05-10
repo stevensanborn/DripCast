@@ -20,8 +20,8 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@/anchor/target/idl/dripcast.json": ["./anchor/target/idl/dripcast.json"],
-      "@/anchor/target/types/dripcast": ["./anchor/target/types/dripcast.ts"],
+      "@/anchor/target/idl/dripcast.json": ["anchor/target/idl/dripcast.json"],
+      "@/anchor/target/types/dripcast": ["anchor/target/types/dripcast.ts"],
       
     },
   },

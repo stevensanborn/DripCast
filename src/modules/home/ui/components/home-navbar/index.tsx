@@ -28,11 +28,11 @@ export const HomeNavbar = () => {
                  <div className="flex justify-center flex-1 max-w-[720px] mx-auto">
                     <SearchInput />
                  </div>
-                 <div>
+                 {/* <div>
                     <AppWalletProvider>
                         <WalletButton />
                     </AppWalletProvider>
-                 </div>
+                 </div> */}
                  
                  <div className="flex-shrink-0 items-center flex gap-4"> 
                     <AuthButton />
