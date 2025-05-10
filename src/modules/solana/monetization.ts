@@ -9,7 +9,7 @@ import { monetization } from "@/db/schema";
 import { StudioGetOneOutput } from "@/modules/studio/types";
 import { BN } from "@coral-xyz/anchor";
 
-export async function initializeMonetization(v:StudioGetOneOutput, m:typeof monetization.$inferSelect){
+export async function initializeMonetization(v:StudioGetOneOutput, m:typeof monetization.$inferSelect,onComplete?:(tx:string)=>void){
     
     if(!SolanaState.connection){
         throw new Error("Connection not found");
@@ -43,7 +43,7 @@ export async function initializeMonetization(v:StudioGetOneOutput, m:typeof mone
 
     console.log("initialize monetization", m)
     const pre = await program.methods.initializeMonetization(
-        getHexHash(m.videoId),
+        getHexHash(m.id),
         m.type,
         new BN(m.cost),
         new BN(m.duration?Number(m.duration):0),
@@ -60,7 +60,7 @@ export async function initializeMonetization(v:StudioGetOneOutput, m:typeof mone
         const signedTx = await SolanaState.provider.wallet.signTransaction(versionedTx)
         const tx = await connection.sendRawTransaction(signedTx.serialize())
         console.log("initialize monetization tx", tx)
-        return tx;
+        onComplete?.(tx)
     } catch (e) {
         console.log("error", e)
         throw e;
@@ -69,7 +69,7 @@ export async function initializeMonetization(v:StudioGetOneOutput, m:typeof mone
 }
 
 export async function getMonetizationAddress(creatorPublicKey:PublicKey, videoId:string){
-    console.log("getCreatorAddress", creatorPublicKey.toBase58())
+    console.log("get Monetizatio Address", creatorPublicKey.toBase58(),videoId)
     const provider = SolanaState.provider;
     if(!provider){
         throw new Error("Provider not found");
@@ -78,7 +78,7 @@ export async function getMonetizationAddress(creatorPublicKey:PublicKey, videoId
     // console.log("program", program)
     
     const [pkey, _bump] : [PublicKey, number] = PublicKey.findProgramAddressSync(
-            [Buffer.from("monetization"), creatorPublicKey.toBuffer(), Buffer.from(getHexHash(videoId))], program.programId);
+            [Buffer.from("monetization"), creatorPublicKey.toBuffer(), Buffer.from(videoId)], program.programId);
     console.log("pkey + ", pkey.toBase58())
     return pkey;
 
@@ -97,9 +97,9 @@ export async function updateMonetizationOnChain(v:StudioGetOneOutput, m:typeof m
     if(!SolanaState.provider){
         throw new Error("Provider not found");
     }
-    
+    console.log("id", m.id)
     const connection = SolanaState.connection!;
-    const monetizationAddress = await getMonetizationAddress(SolanaState.wallet.publicKey, v.id);
+    const monetizationAddress = await getMonetizationAddress(SolanaState.wallet.publicKey, getHexHash(m.id));
     
     const accountInfo = await connection!.getAccountInfo(monetizationAddress);
     
@@ -154,7 +154,7 @@ export async function closeMonetization(v:StudioGetOneOutput, m:typeof monetizat
     }
     
     const connection = SolanaState.connection!;
-    const monetizationAddress = await getMonetizationAddress(SolanaState.wallet.publicKey, v.id);
+    const monetizationAddress = await getMonetizationAddress(SolanaState.wallet.publicKey, getHexHash(m.id));
     const accountInfo = await connection!.getAccountInfo(monetizationAddress);
     
     if(!accountInfo){

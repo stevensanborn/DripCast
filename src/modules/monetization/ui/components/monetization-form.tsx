@@ -26,6 +26,7 @@ import { motion, useDragControls , animate, useMotionValue } from "framer-motion
 import { cn, getHexHash, getMonetizationType } from "@/lib/utils"
 import { initializeMonetization, updateMonetizationOnChain } from "@/modules/solana/monetization"
 import { SolanaState } from "@/components/solana/solana-state"
+import { sleep } from "@trpc/server/unstable-core-do-not-import"
 
 interface MonetizationFormProps {
     videoId: string
@@ -51,7 +52,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
             toast.success("Monetization created")
             utils.monetization.getMany.invalidate({ videoId })
             utils.studio.getOne.invalidate({ id: videoId })
-            onClose()
+            
         },
         onError: (error) => {
             toast.error(error.message)
@@ -75,6 +76,29 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
             toast.error(error.message)
         }
     })
+
+    const onSuccessCreateMonetization = async ( m: typeof monetization.$inferSelect) => {
+        console.log(m)
+        // insertMonetization.mutate({
+        //     ...m,
+        //     duration: m.duration ?? "0",
+        //     creatorKey: SolanaState.wallet?.publicKey?.toBase58() ?? "",
+        //     type: m.type as "purchase" | "snippet" | "payperminute"
+        // })
+        
+            // console.log("monetizationId", monetizationId)
+            
+            // //save on chain
+            // let tx = await initializeMonetization(video,m); 
+
+            // //create transaction
+            // createTransaction.mutate({
+            //     monetizationId: monetizationId,
+            //     transactionId: tx
+            // })
+
+            
+    }
     const dragControls = useDragControls();
     const dragControls2 = useDragControls();
     const handleX = useMotionValue(0);
@@ -143,12 +167,11 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
     const onSubmit = async (data: z.infer<typeof formScheme>) => {
         // console.log(data)
         let m = data as typeof monetization.$inferSelect;
-            
-
+       
         if (selectedMonetization) {
-
-           let tx = await updateMonetizationOnChain(video,m)
-           toast.success("Monetization updated "+tx)
+            console.log("updating monetization ",m)
+           let tx = await updateMonetizationOnChain(video,{...m,id:selectedMonetization.id})
+           toast.success("Monetization updating...... "+tx)
 
             updateMonetization.mutate({
                 ...data,
@@ -168,41 +191,34 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
             })
         }
         else {
-
-           //save on chain
-           try{
-            let tx = await initializeMonetization(video,m); 
-           
             
-            //insert monetization
-            insertMonetization.mutate({
-                ...data,
+          
+           await insertMonetization.mutateAsync({
+                ...m,
+                duration: m.duration=="" ? "0" : m.duration,
                 creatorKey: SolanaState.wallet?.publicKey?.toBase58() ?? "",
-                type: data.type as "purchase" | "snippet" | "payperminute"
-            }, {
-                onSuccess: () => {
-                    toast.success("Monetization created")
-                    onClose()
-                },
-                onError: (error) => {
-                    console.log(error)
-                    toast.error("Error creating monetization")
-                }
-            })
+                type: m.type as "purchase" | "snippet" | "payperminute"
+            },{
+                onSuccess: (data) => {
+                    let monetizationId = data[0].id
+                    console.log("monetizationId", monetizationId)
+                    
+            // //save on chain
+               initializeMonetization(video,{...m,id:monetizationId!},(tx:string)=>{
+                createTransaction.mutate({
+                    monetizationId: monetizationId!,
+                    transactionId: tx
+                })
+                onClose()
+                })
+                } 
+            });
 
-            //create transaction
-            createTransaction.mutate({
-                monetizationId: m.id,
-                transactionId: tx
-            })
+            // //cr}eate transaction
             
-            
-            // formCurrent.reset(Object.assign({}, defaultVals))
-           }
-           catch(error:any){
-            console.log(error)
-            toast.error("Error initializing monetization")
-           }
+           
+         
+           
         }
     }
     const scrollToElementWithFramerMotion = (element: HTMLElement, duration = 0.8) => {

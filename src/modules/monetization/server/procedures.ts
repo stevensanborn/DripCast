@@ -1,11 +1,10 @@
 import { baseProcedure, createTRPCRouter } from "@/trpc/init"
 import { protectedProcedure } from "@/trpc/init"
-import { monetization, monetizationInsertSchema,  monetizationTransactions,  monetizationUpdateSchema } from "@/db/schema"
+import { monetization, monetizationInsertSchema,  monetizationTransactions,  monetizationUpdateSchema, monetizationTransactionInsertSchema } from "@/db/schema"
 import { z } from "zod"
 import { TRPCError } from "@trpc/server"
 import { eq } from "drizzle-orm"
 import { db } from "@/db"
-import { monetizationTransactionInsertSchema } from "@/db/schema"
 
 
 export const monetizationRouter = createTRPCRouter({
@@ -15,7 +14,7 @@ export const monetizationRouter = createTRPCRouter({
         if(!user){
             throw new TRPCError({code:"UNAUTHORIZED",message:"You must be logged in to update monetization"})
         }
-        const updatedMonetization = await db.insert(monetization).values({
+        const newMonetization = await db.insert(monetization).values({
             videoId,
             title,
             description,
@@ -28,7 +27,7 @@ export const monetizationRouter = createTRPCRouter({
         })
         .returning()
         
-        return updatedMonetization
+        return newMonetization
     }),
 
     update: protectedProcedure.input(monetizationUpdateSchema).mutation(async({ctx,input})=>{

@@ -240,12 +240,16 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
                                     Update
                                 </DropdownMenuItem>
                                     <DropdownMenuItem className="cursor-pointer" onClick={async ()=>{
-                                        
+
+                                            try{
                                             let tx = await closeMonetization(video,monetization)
-                                            
+                                            toast.success("Monetization closed "+tx)
+                                            }
+                                            catch(e:any){
+                                                toast.error(e.message)
+                                            }
                                             removeMonetization.mutate({id:monetization.id})
                                             
-                                            toast.success("Monetization closed "+tx)
                                             
                                         }
                                         }> 
