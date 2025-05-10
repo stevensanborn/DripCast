@@ -410,9 +410,9 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                                             <FormItem>
                                                 <FormLabel className="text-xs text-foreground-muted">Set Price</FormLabel>
                                                 <FormDescription>
-                                                        {formCurrent.watch("type" ) ==="purchase" && <p>Set the price of the video</p>}
-                                                        {formCurrent.watch("type" ) ==="snippet" &&  <p>Set the price of the snippet</p>}
-                                                        {formCurrent.watch("type" ) ==="payperminute" &&  <p>Set the price of the video per minute</p>}
+                                                        {formCurrent.watch("type" ) ==="purchase" && (<>Set the price of the video</>)}
+                                                        {formCurrent.watch("type" ) ==="snippet" &&   (<>Set the price of the snippet</>)}
+                                                        {formCurrent.watch("type" ) ==="payperminute" &&   (<>Set the price of the video per minute</>)}
                                                 </FormDescription>
                                                 <FormControl  >
                                                     <Input {...field} placeholder="Cost" type="number" className="w-32" />

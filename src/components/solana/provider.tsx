@@ -26,16 +26,16 @@ export default function AppWalletProvider({
   }) {
     const network = WalletAdapterNetwork.Devnet;
     const endpoint = "https://devnet.helius-rpc.com/?api-key=e6bc5c8f-3dd6-4bfb-9b3b-b198a19d7a65"
-    useMemo(() => clusterApiUrl(network), [network]);
+    // useMemo(() => clusterApiUrl(network), [network]);
     const wallets = useMemo(
       () => [
     //     // manually add any legacy wallet adapters here
     //     // new UnsafeBurnerWalletAdapter(),
-    new PhantomWalletAdapter(),
-    new SolflareWalletAdapter(),
-      ],
+    // new PhantomWalletAdapter(),
+    // new SolflareWalletAdapter(),
+      ],[]
     //   []
-      [network],// unecessary dependency
+    //   [network],// unecessary dependency
     );
    
     // useMemo(()=>{
@@ -64,8 +64,11 @@ export default function AppWalletProvider({
       SolanaState.wallet = wallet;
       SolanaState.connection = connection;
       SolanaState.provider = provider;
-    //   SolanaState.provider = useAnchorProvider();
     //   console.log("SolanaState.provider", SolanaState.provider)
+    //   console.log("SolanaState.connection", SolanaState.connection)
+    //   console.log("SolanaState.wallet", SolanaState.wallet)
+    // //   SolanaState.provider = useAnchorProvider();
+    // //   console.log("SolanaState.provider", SolanaState.provider)
     }, [wallet, connection,provider]);
     return (
         <></>

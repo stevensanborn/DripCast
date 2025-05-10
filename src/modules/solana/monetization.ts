@@ -41,10 +41,10 @@ export async function initializeMonetization(v:StudioGetOneOutput, m:typeof mone
 
     console.log("initialize monetization", m)
     const pre = await program.methods.initializeMonetization(
-        getHexHash(m.id),
+        await getHexHash(m.id),
         m.type,
         new BN(m.cost),
-        new BN(m.duration?Number(m.duration):0),
+        new BN(0),
         m.startTime,
         m.endTime,
     ).accounts({ signer: SolanaState.wallet.publicKey }).instruction()
