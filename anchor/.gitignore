@@ -8,3 +8,7 @@ test-ledger
 wallet/
 .env
 .env.local
+
+# Allow
+!target/idl/dripcast.json
+!target/types/dripcast.ts
