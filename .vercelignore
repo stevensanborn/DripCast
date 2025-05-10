@@ -1,3 +1,3 @@
 anchor
-!anchor/target/idl/dripcast.json
-!anchor/target/idl/types
+!anchor/target/idl
+!anchor/target/types
