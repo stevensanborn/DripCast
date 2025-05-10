@@ -42,3 +42,7 @@ next-env.d.ts
 
 wallet/
 .anchor
+
+!anchor/target/idl/dripcast.json
+!anchor/target/types/dripcast.ts
+
