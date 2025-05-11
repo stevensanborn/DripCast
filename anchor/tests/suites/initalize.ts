@@ -88,7 +88,7 @@ export const initializeTestSuite = () => {
   test("INITIALIZE MONETIZATION STATE", async () => {
 
     //save monetization state
-    const tx = await program.methods.initializeMonetizationState(context.payPerMinuteMonetization).accounts({
+    const tx = await program.methods.initializeMonetizationState(context.payPerMinuteMonetization,"teststateid",new BN(1000)).accounts({
       signer: context.ContentConsumer.publicKey,
     }).signers([context.ContentConsumer]).rpc();
 
@@ -100,6 +100,8 @@ export const initializeTestSuite = () => {
     let monetizationStateAccountInfo = await program.account.monetizationState.fetch(monetizationStatePDA);
     assert.ok(monetizationStateAccountInfo)
     console.log("GOT MONETIZATION STATE ACCOUNT", monetizationStatePDA.toBase58());
+
+    
   });
 
 }

@@ -57,7 +57,6 @@ export const updateTestSuite = () => {
         .accountsStrict({
             signer: context.ContentConsumer.publicKey,
             monetizationState: monetizationStatePDA,
-            
             systemProgram: SystemProgram.programId
         })
         .signers([context.ContentConsumer])

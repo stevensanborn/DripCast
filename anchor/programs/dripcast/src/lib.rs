@@ -67,8 +67,10 @@ pub mod dripcast {
     pub fn initialize_monetization_state(
         ctx: Context<InitializeMonetizationState>,
         monetization: Pubkey,
+        monetization_state_id: String,
+        amount: u64,
     ) -> Result<()> {
-        ctx.accounts.initialize_monetization_state(monetization,&ctx.bumps)
+        ctx.accounts.initialize_monetization_state(monetization,monetization_state_id,amount,&ctx.bumps)
     }
 
     pub fn update_monetization_state(

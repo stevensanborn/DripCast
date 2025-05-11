@@ -4,7 +4,7 @@
     "name": "dripcast",
     "version": "0.1.0",
     "spec": "0.1.0",
-    "description": "Created with Anchor for DripCast!"
+    "description": "Created with Anchor"
   },
   "instructions": [
     {
@@ -429,6 +429,14 @@
         {
           "name": "monetization",
           "type": "pubkey"
+        },
+        {
+          "name": "monetization_state_id",
+          "type": "string"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
         }
       ]
     },
@@ -985,6 +993,10 @@
           {
             "name": "monetization",
             "type": "pubkey"
+          },
+          {
+            "name": "monetization_state_id",
+            "type": "string"
           },
           {
             "name": "user",

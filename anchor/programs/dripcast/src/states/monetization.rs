@@ -22,6 +22,8 @@ pub struct Monetization {
 #[derive(InitSpace)]
 pub struct MonetizationState{
     pub monetization: Pubkey,
+    #[max_len(36)]
+    pub monetization_state_id: String, //id of the content from database
     pub user: Pubkey,
     pub timestamp: u64,
     pub amount: u64,

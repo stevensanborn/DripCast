@@ -19,12 +19,13 @@ pub struct InitializeMonetizationState<'info> {
 }
 
 impl<'info> InitializeMonetizationState<'info> {
-    pub fn initialize_monetization_state(&mut self,monetization: Pubkey,bumps:&InitializeMonetizationStateBumps) -> Result<()> {
+    pub fn initialize_monetization_state(&mut self,monetization: Pubkey,monetization_state_id: String,amount: u64,bumps:&InitializeMonetizationStateBumps) -> Result<()> {
         self.monetization_state.set_inner(MonetizationState {
             user: self.signer.key(),
             monetization: monetization.key(),
+            monetization_state_id,
             timestamp: 0,
-            amount: 0,
+            amount,
             bump: bumps.monetization_state,
         });
         Ok(())
