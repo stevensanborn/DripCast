@@ -4,14 +4,13 @@
  * Note that this is only a type helper and is not the actual IDL. The original
  * IDL can be found at `target/idl/dripcast.json`.
  */
-
 export type Dripcast = {
   "address": "7mHNUhhpqGZWMyEwCEP1eGMktSDz2qYfU1UtFQo7ZBRc",
   "metadata": {
     "name": "dripcast",
     "version": "0.1.0",
     "spec": "0.1.0",
-    "description": "Created with Anchor for DripCast!"
+    "description": "Created with Anchor"
   },
   "instructions": [
     {
@@ -436,6 +435,14 @@ export type Dripcast = {
         {
           "name": "monetization",
           "type": "pubkey"
+        },
+        {
+          "name": "monetizationStateId",
+          "type": "string"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
         }
       ]
     },
@@ -992,6 +999,10 @@ export type Dripcast = {
           {
             "name": "monetization",
             "type": "pubkey"
+          },
+          {
+            "name": "monetizationStateId",
+            "type": "string"
           },
           {
             "name": "user",
