@@ -34,8 +34,6 @@ export async function initializeMonetization( m:typeof monetization.$inferSelect
     const { blockhash } = await connection.getLatestBlockhash();
     const transaction = new Transaction();
 
-    console.log("init monetization state", m)
-    let mid=  await getHexHash(m.id)
     console.log("address", monetizationAddress.toBase58())
     const pre = await program.methods.initializeMonetizationState(
         monetizationAddress,

@@ -1,7 +1,7 @@
 "use client"
 import dynamic from 'next/dynamic';
-import { ButtonProps } from "../ui/button";
-import { BaseWalletMultiButton } from "@solana/wallet-adapter-react-ui";
+// import { ButtonProps } from "../ui/button";
+// import { BaseWalletMultiButton } from "@solana/wallet-adapter-react-ui";
 // import  {BaseWalletConnectionButton} from "@solana/wallet-adapter-react-ui/src/BaseWalletConnectionButton.tsx"
 
 export const WalletButton = () => {

@@ -30,7 +30,7 @@ export const VideoPlayerSkeleton = () => {
 }
 
 const VideoClientPlayer =  React.forwardRef((
-    {videoId,playbackId,posterUrl,autoPlay,onPlay,onDuration,controls=true,muted=false,monetizations,payments}:VideoClientPlayerProps,ref:React.Ref<ReactPlayer>) => {
+    {videoId,playbackId,posterUrl,autoPlay,onPlay,onDuration,muted=false,monetizations,payments}:VideoClientPlayerProps,ref:React.Ref<ReactPlayer>) => {
  
     const [playing,setPlaying] = useState(autoPlay);
     const scrubberRef = useRef<HTMLDivElement>(null);
@@ -60,87 +60,7 @@ const VideoClientPlayer =  React.forwardRef((
         }
     });
 
-  const [hasMounted, setHasMounted] = useState(false);
-    useEffect(() => { setHasMounted(true);  }, []);
 
-    useEffect(()=>{
-       if(paywallMonetizations.length > 0){
-         if(!paywallCheck(videoRef.current!.currentTime)){
-            paywallRef.current!.style.display = "none";
-            //play the video
-            videoRef.current!.play();
-         }
-       }
-    },[payments])
-  useEffect(()=>{
-    let type: "" | "payperminute" | "multi" | "single" |"snippet" = "";
-    monetizations.forEach((monetization)=>{
-        if(monetization.type === "purchase"){
-            type = (type=="snippet") ? "multi" : "single";
-        }
-        if(monetization.type === "payperminute"){
-            type="payperminute";
-        }
-        if(monetization.type === "snippet"){
-            type = (type=="single")? "multi" : "snippet";
-        }
-    })
-    
-    setMonetizationType(type);
-  },[monetizations]);
-
-  const rangeBoundScrubber = (pos:number)=>{
-    return  Math.min(Math.max(0,pos),scrubberBarRef.current!.offsetWidth - scrubberRef.current!.offsetWidth);
-  }
-
-  const handleScrubberMouseDown = (e:React.MouseEvent<HTMLDivElement>)=>{
-    let eleVideo = videoRef.current;
-    let startX = e.clientX;
-    let startPosX = scrubberRef.current!.offsetLeft;
-    let startPaused = eleVideo!.paused;
-    refIsScrubbing.current = true;
-
-    const handleScrubberMouseMove = (e:MouseEvent)=>{
-        
-        //set position of scrubber
-        eleVideo!.pause();
-        setPlaying(false);
-        let pos = startPosX + (e.clientX - startX);
-        pos = rangeBoundScrubber(pos);
-        
-        scrubberRef.current!.style.left = `${pos}px`;
-        scrubberBarProgressRef.current!.style.left = `${pos}px`;
-       let time = (pos/scrubberBarRef.current!.offsetWidth)*durationRef.current;
-        if(!paywallCheck(time)){
-            eleVideo!.currentTime = time;
-            paywallRef.current!.style.display = "none";
-        }
-    }
-    const handleScrubberMouseUp = (e:MouseEvent)=>{
-        
-        refIsScrubbing.current = false;
-        if(!startPaused){
-            eleVideo!.play();
-        }
-        window.removeEventListener("mousemove",handleScrubberMouseMove);
-        window.removeEventListener("mouseup",handleScrubberMouseUp);
-    }
-    window.addEventListener("mouseup",handleScrubberMouseUp);
-    window.addEventListener("mousemove",handleScrubberMouseMove);
-  }
-
-  const handleScrubberMouseUp = (e:React.MouseEvent<HTMLDivElement>)=>{
-    // console.log(e.clientX);
-  }
-  const handleScubberBarClick = (e:React.MouseEvent<HTMLDivElement>)=>{
-     var rect = scrubberBarRef.current!.getBoundingClientRect();
-     const pos = rangeBoundScrubber(e.clientX - rect.left - scrubberRef.current!.offsetWidth/2);
-    
-    //get percent progress
-    const percentProgress = (pos/(rect.width - scrubberRef.current!.offsetWidth));
-    //get scrubber progress
-    videoRef.current!.currentTime = percentProgress*durationRef.current;
-  }
   
   const paywallCheck= useCallback((time:number)=>{
     
@@ -153,7 +73,7 @@ const VideoClientPlayer =  React.forwardRef((
     let seekTime = videoRef.current!.currentTime;
 
     // console.log("ds"+monetizationType,monetizations.length);
-    let overlapingMonetizations:typeof monetization.$inferSelect[] = [];
+    const overlapingMonetizations:typeof monetization.$inferSelect[] = [];
     monetizations.forEach((monetization)=>{
         //is within the range of the monetization
         if(monetization.type === "purchase" && monetizationType === "single"){
@@ -188,6 +108,88 @@ const VideoClientPlayer =  React.forwardRef((
         
   },[monetizations,monetizationType,payments])
    
+
+  const [hasMounted, setHasMounted] = useState(false);
+    useEffect(() => { setHasMounted(true);  }, []);
+
+    useEffect(()=>{
+       if(paywallMonetizations.length > 0){
+         if(!paywallCheck(videoRef.current!.currentTime)){
+            paywallRef.current!.style.display = "none";
+            //play the video
+            videoRef.current!.play();
+         }
+       }
+    },[payments,paywallMonetizations.length,paywallCheck])
+  useEffect(()=>{
+    let type: "" | "payperminute" | "multi" | "single" |"snippet" = "";
+    monetizations.forEach((monetization)=>{
+        if(monetization.type === "purchase"){
+            type = (type=="snippet") ? "multi" : "single";
+        }
+        if(monetization.type === "payperminute"){
+            type="payperminute";
+        }
+        if(monetization.type === "snippet"){
+            type = (type=="single")? "multi" : "snippet";
+        }
+    })
+    
+    setMonetizationType(type);
+  },[monetizations]);
+
+  const rangeBoundScrubber = (pos:number)=>{
+    return  Math.min(Math.max(0,pos),scrubberBarRef.current!.offsetWidth - scrubberRef.current!.offsetWidth);
+  }
+
+  const handleScrubberMouseDown = (e:React.MouseEvent<HTMLDivElement>)=>{
+    const eleVideo = videoRef.current;
+    const startX = e.clientX;
+    const startPosX = scrubberRef.current!.offsetLeft;
+    const startPaused = eleVideo!.paused;
+    refIsScrubbing.current = true;
+
+    const handleScrubberMouseMove = (e:MouseEvent)=>{
+        
+        //set position of scrubber
+        eleVideo!.pause();
+        setPlaying(false);
+        let pos = startPosX + (e.clientX - startX);
+        pos = rangeBoundScrubber(pos);
+        
+        scrubberRef.current!.style.left = `${pos}px`;
+        scrubberBarProgressRef.current!.style.left = `${pos}px`;
+       const time = (pos/scrubberBarRef.current!.offsetWidth)*durationRef.current;
+        if(!paywallCheck(time)){
+            eleVideo!.currentTime = time;
+            paywallRef.current!.style.display = "none";
+        }
+    }
+    const handleScrubberMouseUp = ()=>{
+        
+        refIsScrubbing.current = false;
+        if(!startPaused){
+            eleVideo!.play();
+        }
+        window.removeEventListener("mousemove",handleScrubberMouseMove);
+        window.removeEventListener("mouseup",handleScrubberMouseUp);
+    }
+    window.addEventListener("mouseup",handleScrubberMouseUp);
+    window.addEventListener("mousemove",handleScrubberMouseMove);
+  }
+
+  const handleScrubberMouseUp = ()=>{
+    // console.log(e.clientX);
+  }
+  const handleScubberBarClick = (e:React.MouseEvent<HTMLDivElement>)=>{
+     const rect = scrubberBarRef.current!.getBoundingClientRect();
+     const pos = rangeBoundScrubber(e.clientX - rect.left - scrubberRef.current!.offsetWidth/2);
+    
+    //get percent progress
+    const percentProgress = (pos/(rect.width - scrubberRef.current!.offsetWidth));
+    //get scrubber progress
+    videoRef.current!.currentTime = percentProgress*durationRef.current;
+  }
   const purchaseMonetization = (m:typeof monetization.$inferSelect)=>{
     
     initializeMonetization(m, async(tx:string)=>{
@@ -199,13 +201,10 @@ const VideoClientPlayer =  React.forwardRef((
 
     });
 
- 
-
-
   }
 
 
-  const animateFrame = useCallback((timestamp:number) => {
+  const animateFrame = useCallback(() => {
     if(scrubberRef.current 
         && videoRef.current 
         && durationRef.current&& durationRef.current>0
@@ -231,7 +230,7 @@ const VideoClientPlayer =  React.forwardRef((
     }
     animationRef.current = requestAnimationFrame(animateFrame);
 
-  },[monetizations,monetizationType,payments])
+  },[monetizations,monetizationType,payments,paywallCheck])
 
   useEffect(() => {
     animationRef.current = requestAnimationFrame(animateFrame);
@@ -267,7 +266,7 @@ const VideoClientPlayer =  React.forwardRef((
             
                 onDuration={(duration)=>{
                     if(containerRef.current){
-                      let videoElement = containerRef.current.querySelector("video")
+                      const videoElement = containerRef.current.querySelector("video")
                       if(videoElement){
                         videoRef.current = videoElement as HTMLVideoElement;
                       }

@@ -1,6 +1,6 @@
 import { baseProcedure, createTRPCRouter } from "@/trpc/init"
 import { protectedProcedure } from "@/trpc/init"
-import { monetization, monetizationInsertSchema,  monetizationTransactions,  monetizationUpdateSchema, monetizationTransactionInsertSchema, monetizationPaymentInsertSchema, monetizationPayments, users } from "@/db/schema"
+import { monetization, monetizationInsertSchema,  monetizationTransactions,  monetizationUpdateSchema, monetizationTransactionInsertSchema, monetizationPayments, users } from "@/db/schema"
 import { z } from "zod"
 import { TRPCError } from "@trpc/server"
 import { eq,and, getTableColumns } from "drizzle-orm"
@@ -118,7 +118,7 @@ export const monetizationRouter = createTRPCRouter({
 
     getMonetizationPayments:baseProcedure.input(z.object({videoId:z.string()})).query(async({ctx,input})=>{
         const {videoId} = input
-        const {clerkUserId,user} = ctx
+        const {clerkUserId} = ctx
         console.log("monetization payments",ctx)
         if(!clerkUserId){
             console.log("no user")

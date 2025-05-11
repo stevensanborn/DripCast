@@ -1,10 +1,9 @@
 import {monetization} from "@/db/schema"
 
 interface MonetizationThumbsProps{
-    videoId: string,
     monetizations: typeof monetization.$inferSelect[]
 }
-export const MonetizationThumbs = ({videoId,monetizations}:MonetizationThumbsProps) => {
+export const MonetizationThumbs = ({monetizations}:MonetizationThumbsProps) => {
     return (
         <div className="flex flex-col gap-2">
             {monetizations.map((monetization)=>(

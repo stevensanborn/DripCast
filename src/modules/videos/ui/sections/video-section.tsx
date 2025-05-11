@@ -78,7 +78,7 @@ const VideoSectionInner = ({videoId}:VideoSectionProps) => {
        
         </div>
           <VideoBanner status={video.muxStatus}></VideoBanner>
-          <MonetizationThumbs videoId={videoId} monetizations={monetizations} />
+          <MonetizationThumbs monetizations={monetizations} />
           <VideoTopRow video={video} />
         </>
     )
