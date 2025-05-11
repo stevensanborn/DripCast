@@ -1,3 +1,2 @@
-anchor
-!anchor/target/idl
-!anchor/target/types
+anchor/
+!/src/anchor/
