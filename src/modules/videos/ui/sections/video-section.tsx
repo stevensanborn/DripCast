@@ -1,15 +1,18 @@
 
 "use client"
+
+
 import { cn } from "@/lib/utils"
 import { trpc } from "@/trpc/client"
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
-import VideoPlayer, { VideoPlayerSkeleton } from "../components/video-player"
+// import VideoPlayer, { VideoPlayerSkeleton } from "../components/video-player"
 import { VideoBanner } from "../components/video-banner"
 import { VideoTopRow, VideoTopRowSkeleton } from "../components/video-top-row"
 import { useAuth } from "@clerk/nextjs"
 import { MonetizationThumbs } from "../components/monetization-thumbs"
-import VideoClientPlayer from "../components/video-client-player"
+import VideoClientPlayer, { VideoPlayerSkeleton } from "../components/video-client-player"
+import { monetizationPayments } from "@/db/schema"
 
 
 interface VideoSectionProps{
@@ -40,6 +43,8 @@ const VideoSectionSkeleton = () => {
 const VideoSectionInner = ({videoId}:VideoSectionProps) => {
     const [video] = trpc.videos.getOne.useSuspenseQuery({id: videoId});
     const [monetizations] = trpc.monetization.getMany.useSuspenseQuery({videoId})
+    const [payments] = trpc.monetization.getMonetizationPayments.useSuspenseQuery({videoId})
+
     const {isSignedIn } = useAuth(); 
     const utils = trpc.useUtils();
 
@@ -67,6 +72,7 @@ const VideoSectionInner = ({videoId}:VideoSectionProps) => {
           videoId={videoId}
           onPlay={handlePlay}
           monetizations={monetizations}
+          payments={payments as typeof monetizationPayments.$inferSelect[]}
           />  
     
        

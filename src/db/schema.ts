@@ -304,3 +304,29 @@ export const monetizationTransactionRelations = relations(monetizationTransactio
 export const monetizationTransactionSelectSchema = createSelectSchema(monetizationTransactions)
 export const monetizationTransactionInsertSchema = createInsertSchema(monetizationTransactions)
 export const monetizationTransactionUpdateSchema = createUpdateSchema(monetizationTransactions)
+
+
+export const monetizationPayments = pgTable("monetization_payments",{
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").references(()=>users.id,{onDelete:"cascade"}).notNull(),
+    transactionId: varchar("transaction_id",{length:100}).notNull(),
+    monetizationId: uuid("monetization_id").references(()=>monetization.id,{onDelete:"cascade"}).notNull(),
+    amount: decimal("amount",{precision:10,scale:2}).notNull(),
+    createdAt:timestamp("created_at").notNull().defaultNow(),
+    updatedAt:timestamp("updated_at").notNull().defaultNow(),
+})
+
+export const monetizationPaymentRelations = relations(monetizationPayments,({one})=>({
+    monetization:one(monetization,{
+        fields:[monetizationPayments.monetizationId],
+        references:[monetization.id]
+    }),
+    user:one(users,{
+        fields:[monetizationPayments.userId],
+        references:[users.id]
+    })
+}))
+
+export const monetizationPaymentSelectSchema = createSelectSchema(monetizationPayments)
+export const monetizationPaymentInsertSchema = createInsertSchema(monetizationPayments)
+export const monetizationPaymentUpdateSchema = createUpdateSchema(monetizationPayments)

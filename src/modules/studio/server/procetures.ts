@@ -12,7 +12,7 @@ export const studioRouter = createTRPCRouter({
     })).query(async ({ctx,input})=>{
         const userId = ctx.user?.id;
         const {id} = input;
-        console.log("userId",userId)
+        // console.log("userId",userId)
         if(!userId){
             console.error("User not found , no object")
             throw new TRPCError({code: 'UNAUTHORIZED'})

@@ -1,11 +1,14 @@
 "use client"
 
-import React, { useEffect, useCallback,  useMemo, useRef, useState } from "react";
+import React, { useEffect, useCallback,   useRef, useState } from "react";
 import { THUMBNAIL_FALLBACK_URL } from "../../constants";
 import ReactPlayer from "react-player";
-import { monetization } from "@/db/schema";
+import { monetization, monetizationPayments } from "@/db/schema";
 import { Button } from "@/components/ui/button";
 import { PauseIcon, PlayIcon } from "lucide-react";
+import { trpc } from "@/trpc/client"
+import { initializeMonetization } from "@/modules/solana/monetizationState";
+import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 interface VideoClientPlayerProps{
     videoId:string;
@@ -17,6 +20,7 @@ interface VideoClientPlayerProps{
     onDuration?:(duration:number)=>void;
     muted?:boolean;
     monetizations: typeof monetization.$inferSelect[];
+    payments: typeof monetizationPayments.$inferSelect[];
 }
 
 export const VideoPlayerSkeleton = () => {
@@ -25,7 +29,8 @@ export const VideoPlayerSkeleton = () => {
     )
 }
 
-const VideoClientPlayer =  React.forwardRef(({videoId,playbackId,posterUrl,autoPlay,onPlay,onDuration,controls=true,muted=false,monetizations}:VideoClientPlayerProps,ref:React.Ref<ReactPlayer>) => {
+const VideoClientPlayer =  React.forwardRef((
+    {videoId,playbackId,posterUrl,autoPlay,onPlay,onDuration,controls=true,muted=false,monetizations,payments}:VideoClientPlayerProps,ref:React.Ref<ReactPlayer>) => {
  
     const [playing,setPlaying] = useState(autoPlay);
     const scrubberRef = useRef<HTMLDivElement>(null);
@@ -38,14 +43,35 @@ const VideoClientPlayer =  React.forwardRef(({videoId,playbackId,posterUrl,autoP
     const refIsScrubbing = useRef<boolean>(false);
     const paywallRef = useRef<HTMLDivElement>(null);
     const [paywallMonetizations,setPaywallMonetizations] = useState<typeof monetization.$inferSelect[]>([]);
+    const utils = trpc.useUtils();
 
     //type of monetization to tell what mode we are going to use 
     const [monetizationType,setMonetizationType] = useState<"" | "payperminute" | "multi"| "single">("");
-  ;
+  
+    const createPayment = trpc.monetization.createPayment.useMutation({
+
+        onSuccess:()=>{
+            console.log("Payment created");
+            utils.monetization.getMonetizationPayments.invalidate({videoId})
+            
+        },
+        onError:(error)=>{
+            console.log(error);
+        }
+    });
 
   const [hasMounted, setHasMounted] = useState(false);
-    useEffect(() => { setHasMounted(true); }, []);
+    useEffect(() => { setHasMounted(true);  }, []);
 
+    useEffect(()=>{
+       if(paywallMonetizations.length > 0){
+         if(!paywallCheck(videoRef.current!.currentTime)){
+            paywallRef.current!.style.display = "none";
+            //play the video
+            videoRef.current!.play();
+         }
+       }
+    },[payments])
   useEffect(()=>{
     let type: "" | "payperminute" | "multi" | "single" |"snippet" = "";
     monetizations.forEach((monetization)=>{
@@ -117,7 +143,9 @@ const VideoClientPlayer =  React.forwardRef(({videoId,playbackId,posterUrl,autoP
   }
   
   const paywallCheck= useCallback((time:number)=>{
+    
     if(!monetizations || monetizations.length === 0) return;
+    
     if(!videoRef.current) return;
 
 
@@ -130,10 +158,23 @@ const VideoClientPlayer =  React.forwardRef(({videoId,playbackId,posterUrl,autoP
         //is within the range of the monetization
         if(monetization.type === "purchase" && monetizationType === "single"){
             if(time >= Number(monetization.startTime) ){
-                isPaywallVisible = true;
-                seekTime = Number(monetization.startTime) ;
-                overlapingMonetizations.push(monetization);
+                //check if there is an existing payment for this monetization
+                let isPaid = false;
+                payments.forEach((payment)=>{
+                    if(payment.monetizationId === monetization.id){
+                        isPaid = true;
+                    }
+                })
+                if(!isPaid){
+                    isPaywallVisible = false;
+                    isPaywallVisible = true;
+                    seekTime = Number(monetization.startTime) ;
+                    overlapingMonetizations.push(monetization);
+                }
+                
+
             }
+            
         }
     })
     if(isPaywallVisible){
@@ -145,10 +186,22 @@ const VideoClientPlayer =  React.forwardRef(({videoId,playbackId,posterUrl,autoP
     } 
     return isPaywallVisible;
         
-  },[monetizations,monetizationType])
+  },[monetizations,monetizationType,payments])
    
   const purchaseMonetization = (m:typeof monetization.$inferSelect)=>{
-    console.log(m);
+    
+    initializeMonetization(m, async(tx:string)=>{
+        await createPayment.mutateAsync({
+            monetizationId:m.id,
+            transactionId:tx,
+            amount:Number(m.cost)
+        });
+
+    });
+
+ 
+
+
   }
 
 
@@ -178,7 +231,7 @@ const VideoClientPlayer =  React.forwardRef(({videoId,playbackId,posterUrl,autoP
     }
     animationRef.current = requestAnimationFrame(animateFrame);
 
-  },[monetizations,monetizationType])
+  },[monetizations,monetizationType,payments])
 
   useEffect(() => {
     animationRef.current = requestAnimationFrame(animateFrame);
@@ -228,19 +281,29 @@ const VideoClientPlayer =  React.forwardRef(({videoId,playbackId,posterUrl,autoP
             />)}
              <div className="paywall w-full h-full absolute top-0 left-0 bg-black/50 bg-gradient-to-bl from-black/50 to-black/80   hidden" ref={paywallRef} >
                 <div className="flex flex-col w-full h-full justify-center items-center">
-                    
-                    <h1>To access this content, consider the following options</h1>
-                    
-                    <div>
+                    <Card >
+                    <CardHeader>
+                    <CardTitle>Purchase this content</CardTitle>
+                   <CardDescription>
+                   To access this content, consider the following options
+                   </CardDescription>
+                    </CardHeader>
+                    <CardContent>
                         {hasMounted && paywallMonetizations.map((monetization)=>{
                             return (
-                                <Button variant="outline" key={"paywall-"+monetization.id} className="rounded-full" 
-                                onClick={()=>{
-                                    purchaseMonetization(monetization);
-                                }}>Purchase </Button>
+                                <div className=" flex flex-col items-start space-y-4 rounded-md border p-4" key={"paywall-"+monetization.id}>
+
+                                <p className="text-sm font-medium leading-none">{monetization.title}</p>
+                                <p className="text-sm text-muted-foreground leading-none">{monetization.description}</p>
+                                 <Button variant="outline" key={"paywall-"+monetization.id} className="rounded-full" 
+                                    onClick={()=>{
+                                        purchaseMonetization(monetization);
+                                    }}>Purchase </Button>
+                                </div>
                             )
                         })}
-                    </div>
+                   </CardContent>
+                   </Card>
                 </div>
             </div>
             </div>

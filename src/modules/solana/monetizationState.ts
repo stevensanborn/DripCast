@@ -3,9 +3,9 @@ import { monetization } from "@/db/schema";
 import { getMonetizationAddress } from "./monetization";
 import { getHexHash } from "@/lib/utils";
 import { Transaction, VersionedTransaction } from "@solana/web3.js";
+import { BN } from "@coral-xyz/anchor";
 
-
-export async function purchaseMonetization( m:typeof monetization.$inferSelect){
+export async function initializeMonetization( m:typeof monetization.$inferSelect,onComplete?:(tx:string)=>void){
     
     if(!SolanaState.connection){
         throw new Error("Connection not found");
@@ -22,7 +22,6 @@ export async function purchaseMonetization( m:typeof monetization.$inferSelect){
     
     const connection = SolanaState.connection!;
     const monetizationAddress = await getMonetizationAddress(SolanaState.wallet.publicKey, await getHexHash(m.id));
-
      
     const accountInfo = await connection!.getAccountInfo(monetizationAddress);
     
@@ -36,9 +35,14 @@ export async function purchaseMonetization( m:typeof monetization.$inferSelect){
     const transaction = new Transaction();
 
     console.log("init monetization state", m)
-    const pre = await program.methods.initializeMonetizationState(m).accounts({ 
-        signer: SolanaState.wallet.publicKey,
-        monetization: monetizationAddress
+    let mid=  await getHexHash(m.id)
+    console.log("address", monetizationAddress.toBase58())
+    const pre = await program.methods.initializeMonetizationState(
+        monetizationAddress,
+        "default",
+        new BN(Math.round(Number(m.cost)))
+    ).accounts({       
+        user: SolanaState.wallet.publicKey
     }).instruction()
     transaction.add(pre)
     transaction.recentBlockhash = blockhash
@@ -49,7 +53,9 @@ export async function purchaseMonetization( m:typeof monetization.$inferSelect){
         const signedTx = await SolanaState.provider.wallet.signTransaction(versionedTx)
         const tx = await connection.sendRawTransaction(signedTx.serialize())
         console.log("initialize monetization state tx", tx)
-        return tx;
+        if(onComplete){
+            onComplete(tx);
+        }
     } catch (e) {
         console.log("error", e)
         throw e;

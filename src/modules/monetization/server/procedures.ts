@@ -1,9 +1,9 @@
 import { baseProcedure, createTRPCRouter } from "@/trpc/init"
 import { protectedProcedure } from "@/trpc/init"
-import { monetization, monetizationInsertSchema,  monetizationTransactions,  monetizationUpdateSchema, monetizationTransactionInsertSchema } from "@/db/schema"
+import { monetization, monetizationInsertSchema,  monetizationTransactions,  monetizationUpdateSchema, monetizationTransactionInsertSchema, monetizationPaymentInsertSchema, monetizationPayments, users } from "@/db/schema"
 import { z } from "zod"
 import { TRPCError } from "@trpc/server"
-import { eq } from "drizzle-orm"
+import { eq,and, getTableColumns } from "drizzle-orm"
 import { db } from "@/db"
 
 
@@ -98,5 +98,56 @@ export const monetizationRouter = createTRPCRouter({
             transactionId
         }).returning()
         return createdTransaction
+    }),
+
+    createPayment:protectedProcedure.input(
+        z.object({monetizationId:z.string(),transactionId:z.string(),amount:z.number()})).mutation(async({ctx,input})=>{
+        const {monetizationId,transactionId,amount} = input
+        const {user} = ctx
+        if(!user){
+            throw new TRPCError({code:"UNAUTHORIZED",message:"You must be logged in to create a payment"})
+        }
+        const [createdPayment] = await db.insert(monetizationPayments).values({
+            monetizationId,
+            transactionId,
+            amount:amount.toString(),
+            userId:user.id
+        }).returning()
+        return createdPayment
+    }),
+
+    getMonetizationPayments:baseProcedure.input(z.object({videoId:z.string()})).query(async({ctx,input})=>{
+        const {videoId} = input
+        const {clerkUserId,user} = ctx
+        console.log("monetization payments",ctx)
+        if(!clerkUserId){
+            console.log("no user")
+            // throw new TRPCError({code:"UNAUTHORIZED",message:"You must be logged in to get monetization status"})
+            return []
+        }
+        
+        const [existingUser] = await db.select({id:users.id}).from(users).where(eq(users.clerkId,clerkUserId))
+        if(!existingUser){
+            console.log("no user in db0")
+            return []
+        }
+        else{
+            console.log("user in db" ,existingUser)
+        }
+        const payments = await db.select(
+           {
+            ...getTableColumns(monetizationPayments),
+           }
+        ).from(monetizationPayments)
+        .innerJoin(monetization, eq(monetizationPayments.monetizationId,monetization.id))
+       .where(
+            and(
+                eq(monetizationPayments.userId,existingUser.id),
+                eq(monetization.videoId,videoId)
+            )
+        )
+       
+        return payments
+      
     })
 })
