@@ -262,7 +262,7 @@ export const monetization = pgTable("monetization",{
     id: uuid("id").primaryKey().defaultRandom(),
     title: text("title").notNull(),
     description: text("description"),
-    txId: varchar("transaction_id",{length:64}),
+    txId: varchar("transaction_id",{length:100}),
     videoId: uuid("video_id").references(()=>videos.id,{onDelete:"cascade"}).notNull(),
     type: monetizationType("monetization_type").notNull(),
     cost: decimal("price",{precision:10,scale:2}).notNull(),

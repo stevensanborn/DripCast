@@ -13,7 +13,7 @@ const VideoView = ({videoId}:VideoViewProps) => {
         <div className="flex flex-col max-w-[1700px] mx-auto pt-2.5 px-4 mb-10">
             <div className="flex-1 min-w-0 flex flex-col gap-6 xl:flex-row">
                 <div className="flex-1 min-w-0 flex flex-col">
-                    <VideoSection videoId={videoId} />
+                     <VideoSection videoId={videoId} />
                     <div className="xl:hidden block mt-4">
                         <SuggestionsSection videoId={videoId}></SuggestionsSection>
                     </div>

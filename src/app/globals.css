@@ -138,7 +138,15 @@
 
     --sidebar-border: 240 3.7% 15.9%;
 
-    --sidebar-ring: 217.2 91.2% 59.8%}
+    --sidebar-ring: 217.2 91.2% 59.8%
+  
+    --video-player-controls-height: 50px;
+    --video-player-scrubber-height: 15px;
+    
+    --video-player-scrubber-dot-size: 10px;
+  }
+
+    
 }
 
 
@@ -164,3 +172,47 @@
     scrollbar-width: none;
   }
 
+
+.video-client-player{
+
+  transition: bottom 0.5s ease-in-out;
+}
+
+.video-client-player:hover .controls{
+  opacity: 1;
+  bottom: 1px;
+}
+.scrubber-container{
+  transition: height 0.25s ease-in-out;
+  
+  height: 20px;
+}
+.scrubber-container:hover{
+ 
+}
+.scrubber{
+  transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+
+.scrubber-container:hover .scrubber{
+
+  opacity: 1;
+}
+
+.scrubber-container:hover .scrubber-dot{
+  opacity: 0.85;
+  transform: scale(1.0);
+
+}
+.monetization-bar{
+  opacity: 0.85;
+  height: 2px;
+  transition: top 0.25s ease-in-out, opacity 0.25s ease-in-out, height 0.25s ease-in-out;
+}
+.scrubber-container:hover .monetization-bar{
+  top:0;
+  opacity: 1;
+  height: 10px;
+  background-color: coral;
+}

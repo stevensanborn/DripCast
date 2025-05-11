@@ -160,6 +160,12 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                     toast.success("Monetization updated")
                     utils.monetization.getMany.invalidate({ videoId })
                     utils.studio.getOne.invalidate({ id: videoId })
+
+                    createTransaction.mutate({
+                        monetizationId: selectedMonetization.id,
+                        transactionId: tx
+                    })
+                    
                     onClose()
                 },
                 onError: (error) => {

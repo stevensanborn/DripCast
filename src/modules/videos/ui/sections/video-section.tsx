@@ -8,7 +8,8 @@ import VideoPlayer, { VideoPlayerSkeleton } from "../components/video-player"
 import { VideoBanner } from "../components/video-banner"
 import { VideoTopRow, VideoTopRowSkeleton } from "../components/video-top-row"
 import { useAuth } from "@clerk/nextjs"
-
+import { MonetizationThumbs } from "../components/monetization-thumbs"
+import VideoClientPlayer from "../components/video-client-player"
 
 
 interface VideoSectionProps{
@@ -38,6 +39,7 @@ const VideoSectionSkeleton = () => {
 
 const VideoSectionInner = ({videoId}:VideoSectionProps) => {
     const [video] = trpc.videos.getOne.useSuspenseQuery({id: videoId});
+    const [monetizations] = trpc.monetization.getMany.useSuspenseQuery({videoId})
     const {isSignedIn } = useAuth(); 
     const utils = trpc.useUtils();
 
@@ -58,17 +60,19 @@ const VideoSectionInner = ({videoId}:VideoSectionProps) => {
         {/* VIDEO PLAYER */}
         {/* show only if ready */}
         <div className={cn("aspect-video bg-black rounded-xl relative overflow-hidden", video.muxStatus !== "ready" && "rounded-none")}>
-          <VideoPlayer 
+          <VideoClientPlayer 
           autoPlay={true}
           playbackId={video.muxPlaybackId}
           posterUrl={video.thumbnailUrl}
           videoId={videoId}
           onPlay={handlePlay}
+          monetizations={monetizations}
           />  
     
        
         </div>
           <VideoBanner status={video.muxStatus}></VideoBanner>
+          <MonetizationThumbs videoId={videoId} monetizations={monetizations} />
           <VideoTopRow video={video} />
         </>
     )
