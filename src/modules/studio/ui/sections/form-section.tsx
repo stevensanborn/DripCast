@@ -23,7 +23,7 @@ import { getMonetizationType, snakeCaseToTitleCase } from "@/lib/utils"
 import Image from "next/image"
 import { THUMBNAIL_FALLBACK_URL } from "@/modules/videos/constants"
 import { ThumbnailUploadModal } from "@/modules/studio/ui/components/thumbnail-upload-modal"
-import { APP_URL } from "@/constants"
+import { APP_URL, INFINITE_QUERY_LIMIT } from "@/constants"
 import { ResponsiveModal } from "../components/responsive-modal"
 import { MonetizationForm } from "@/modules/monetization/ui/components/monetization-form"
 import { TooltipProvider } from "@/components/ui/tooltip"
@@ -69,10 +69,15 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
 
     const removeVideo = trpc.videos.removeVideo.useMutation({
         onSuccess: () => {
-          utils.studio.getMany.invalidate()
-          utils.studio.getOne.invalidate({id: videoId})
+            utils.videos.getMany.invalidate({
+                limit: INFINITE_QUERY_LIMIT,
+                userId: video.userId,
+                visibility: null
+              })
+        //   utils.studio.getOne.invalidate({id: videoId})
           toast.success("Video deleted")
           router.push("/studio/")
+         
         },
         onError: (error) => {
          toast.error(error.message)
@@ -90,8 +95,13 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
     })
     const revalidateVideo = trpc.videos.revalidate.useMutation({
         onSuccess: () => {
-          utils.studio.getMany.invalidate()
+        //   utils.studio.getMany.invalidate()
           utils.studio.getOne.invalidate({id: videoId})
+          utils.videos.getMany.invalidate({
+            limit: INFINITE_QUERY_LIMIT,
+            userId: video.userId,
+            visibility: null
+          })
           toast.success("Video revalidated")
         },
         onError: (error) => {
