@@ -16,9 +16,9 @@ const Page = async ({searchParams}:PageProps) =>{
   const {category_id} = await searchParams;
   
     await trpc.categories.getMany.prefetch()
-    await trpc.videos.getMany.prefetch({limit:INFINITE_QUERY_LIMIT,categoryId:category_id})
  
-  
+    await trpc.videos.getMany.prefetch({limit:INFINITE_QUERY_LIMIT,categoryId:category_id})
+   
   return (
     
     <div className="">
