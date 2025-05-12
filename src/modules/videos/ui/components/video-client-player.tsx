@@ -5,7 +5,7 @@ import { THUMBNAIL_FALLBACK_URL } from "../../constants";
 import ReactPlayer from "react-player";
 import { monetization, monetizationPayments } from "@/db/schema";
 import { Button } from "@/components/ui/button";
-import { PauseIcon, PlayIcon } from "lucide-react";
+import { PauseIcon, PlayIcon, VolumeOffIcon, VolumeIcon } from "lucide-react";
 import { trpc } from "@/trpc/client"
 import { initializeMonetization } from "@/modules/solana/monetizationState";
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -33,6 +33,7 @@ const VideoClientPlayer =  React.forwardRef((
     {videoId,playbackId,posterUrl,autoPlay,onPlay,onDuration,muted=false,monetizations,payments}:VideoClientPlayerProps,ref:React.Ref<ReactPlayer>) => {
  
     const [playing,setPlaying] = useState(autoPlay);
+    const [isMuted,setIsMuted] = useState(muted);
     const scrubberRef = useRef<HTMLDivElement>(null);
     const scrubberBarRef = useRef<HTMLDivElement>(null);
     const scrubberBarProgressRef = useRef<HTMLDivElement>(null);
@@ -74,6 +75,9 @@ const VideoClientPlayer =  React.forwardRef((
 
     // console.log("ds"+monetizationType,monetizations.length);
     const overlapingMonetizations:typeof monetization.$inferSelect[] = [];
+    
+    if(monetizations.length ==0 ) return false;
+
     monetizations.forEach((monetization)=>{
         //is within the range of the monetization
         if(monetization.type === "purchase" && monetizationType === "single"){
@@ -216,7 +220,7 @@ const VideoClientPlayer =  React.forwardRef((
         const eleVideo = videoRef.current;
         if( !refIsScrubbing.current){
         const percentProgress = (eleVideo.currentTime/durationRef.current)*100;
-        const scrubberWidth = scrubberBarRef!.current!.offsetWidth - scrubberRef.current!.offsetWidth;
+        const scrubberWidth = scrubberBarRef!.current!.offsetWidth - (scrubberRef.current!.offsetWidth-1);
         const scrubberProgress = (percentProgress/100)*scrubberWidth ;
         scrubberRef.current.style.left = `${scrubberProgress}px`; 
         scrubberBarProgressRef.current!.style.left = `${scrubberProgress}px`; 
@@ -230,7 +234,7 @@ const VideoClientPlayer =  React.forwardRef((
     }
     animationRef.current = requestAnimationFrame(animateFrame);
 
-  },[monetizations,monetizationType,payments,paywallCheck])
+  },[paywallCheck])
 
   useEffect(() => {
     animationRef.current = requestAnimationFrame(animateFrame);
@@ -259,6 +263,7 @@ const VideoClientPlayer =  React.forwardRef((
                 width="100%"
                 height="100%"
                 onPlay={onPlay}
+                autoPlay={autoPlay}
                 ref={ref}
                 onError={(error)=>{
                     console.log(error);
@@ -338,14 +343,23 @@ const VideoClientPlayer =  React.forwardRef((
                            
                     </div>
                    
-                    <div className="flex items-center justify-between">
-                        <Button variant="ghost" size="icon" className="rounded-2xl overflow-hidden" onClick={
+                    <div className="flex items-center justify-start gap-2 ml-2 mb-1">
+                        <Button variant="ghost" size="icon" className="rounded-full overflow-hidden" onClick={
                             (e)=>{
                                 e.preventDefault();
                                 setPlaying(!playing);
                             }
                         }>
                             {playing ? <PauseIcon className="w-4 h-4" /> : <PlayIcon className="w-4 h-4" />}
+                        </Button>
+
+                        <Button variant="ghost" size="icon" className="rounded-full overflow-hidden" onClick={
+                            (e)=>{
+                                e.preventDefault();
+                                setIsMuted(!isMuted);
+                            }
+                        }>
+                            {isMuted ? <VolumeOffIcon className="w-4 h-4" /> : <VolumeIcon className="w-4 h-4" />}
                         </Button>
 
                     </div>
