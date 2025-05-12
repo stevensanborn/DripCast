@@ -306,7 +306,7 @@ export const MonetizationForm = ({ videoId, video, selectedMonetization, onClose
                                             </div>
 
                                             <div className="absolute bottom-0 top-0 left-0 right-0 h-full" ref={refProgressBar} >
-                                                <div  className={`h-full  bg-gradient-to-b  from-coral to-indian_red  absolute top-0 left-0 w-full rounded-md drop-shadow-md drop-shadow-black border-y-2 border-dripcast_blue text-xs flex items-center justify-center overflow-hidden `} >
+                                                <div  className={`h-full  bg-gradient-to-b  from-coral to-crayola_red  absolute top-0 left-0 w-full rounded-md drop-shadow-md drop-shadow-black border-y-2 border-dripcast_blue text-xs flex items-center justify-center overflow-hidden `} >
                                                     
                                                 </div>
                                             </div>
