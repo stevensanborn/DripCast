@@ -168,6 +168,7 @@
 
 .nav-linear-gradient{
   background: linear-gradient(15deg, #EE4266,#aa507a );
+  filter: drop-shadow(0px 3px 1px rgba(0,0,0,0.1));
 }
 
   .no-scrollbar::-webkit-scrollbar {
@@ -221,4 +222,16 @@
   opacity: 1;
   height: 10px;
   background-color: coral;
+}
+
+.monetization-timeline-container {
+  cursor: pointer;
+}
+.monetization-timeline-container .mouse-line{
+  opacity: 0.0;
+  transition: opacity 0.25s ease-in-out;
+}
+
+.monetization-timeline-container:hover .mouse-line{
+  opacity: 1.0;
 }

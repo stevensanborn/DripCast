@@ -19,7 +19,7 @@ export default withUt({
 			onyx:'#2E3234',
 			dripcast_blue:'#03E4FF',
 			seasalt:"#FCFAFA",
-			graypurple:'#94778B',
+			gray_purple:'#94778B',
 			crayola_red: '#EE4266',
 			coral:'#FF7F50',
 			brown: '#96705D',

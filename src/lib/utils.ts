@@ -11,6 +11,23 @@ export const formatDuration = (duration:number) => {
   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
+export const formatDurationSecs = (duration:number) => {
+  const hours = Math.floor(duration / 3600);
+  let remaining = duration % 3600;
+  const minutes = Math.floor(remaining / 60);
+  remaining = remaining % 60;
+  const seconds = Math.floor(remaining);
+  const milliseconds = Math.floor((remaining - seconds) * 100);
+  let time = ''
+  if(hours > 0  ){
+    time = `${hours.toString().padStart(1, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+  }else if(minutes > 0){
+    time = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+  }else{
+    time = `${seconds.toString().padStart(2, '0')}:${milliseconds.toString().padStart(2, '0')}`
+  }
+  return time;
+}
 export const snakeCaseToTitleCase = (str:string) => {
   return str.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
 }

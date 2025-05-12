@@ -5,7 +5,7 @@ import { DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/co
 import { Form, FormField, FormLabel, FormMessage, FormControl, FormItem } from "@/components/ui/form"
 import { DropdownMenu } from "@/components/ui/dropdown-menu"
 import { trpc } from "@/trpc/client"
-import {  MoreVerticalIcon, CopyIcon, TrashIcon, CheckIcon, Globe2Icon, LockIcon, ImagePlusIcon, RotateCcw, SparklesIcon, RefreshCcw, PlusIcon, PencilIcon } from "lucide-react"
+import {  MoreVerticalIcon, CopyIcon, TrashIcon, CheckIcon, Globe2Icon, LockIcon, ImagePlusIcon, RotateCcw, SparklesIcon, RefreshCcw, PencilIcon, Edit2Icon } from "lucide-react"
 import { Suspense, useEffect, useState } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 import { useForm } from "react-hook-form"
@@ -24,11 +24,6 @@ import Image from "next/image"
 import { THUMBNAIL_FALLBACK_URL } from "@/modules/videos/constants"
 import { ThumbnailUploadModal } from "@/modules/studio/ui/components/thumbnail-upload-modal"
 import { APP_URL, INFINITE_QUERY_LIMIT } from "@/constants"
-import { ResponsiveModal } from "../components/responsive-modal"
-import { MonetizationForm } from "@/modules/monetization/ui/components/monetization-form"
-import { TooltipProvider } from "@/components/ui/tooltip"
-import { TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Tooltip } from "@/components/ui/tooltip"
 import { closeMonetization } from "@/modules/solana/monetization"
 
 
@@ -207,21 +202,8 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
                             <FormMessage />
                         </FormItem>
                     )} />
-                    <div className="flex items-center justify-start gap-x-2">
-                    <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger>
-                            <p className="size-8 bg-slate-50 text-black flex items-center justify-center rounded-full hover:opacity-70"  onClick={()=>setShowMonetization(true)} ><PlusIcon className="size-4 "></PlusIcon></p>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>Add Monetization</p>
-                    </TooltipContent>
-                    </Tooltip>
-                    </TooltipProvider>
-                        <div>Monetizations</div>
-                        
-                        {/*  */}
-                     
+                    <div className="flex items-center justify-start gap-x-2">    
+                        <Link href={`/studio/videos/${videoId}/monetization`}><Button variant="outline" ><Edit2Icon></Edit2Icon> Modify Monetizations</Button></Link>
                     </div>
                     <div className="flex  gap-x-2">
                         {monetizations.map((monetization)=>(
@@ -423,11 +405,7 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
         
     </Form>
    
-    <ResponsiveModal title={"Monetize "} open={showMonetization}  onOpenChange={()=>{setShowMonetization(false)}}  >
-       <div className="w-full overflow-y-scroll max-h-[80vh] no-scrollbar">
-       <MonetizationForm videoId={videoId} video={video} selectedMonetization={selectedMonetization} onClose={()=>{setShowMonetization(false)}} />
-       </div>
-    </ResponsiveModal>
+    
     </>)
 }
 

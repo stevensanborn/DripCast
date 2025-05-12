@@ -84,7 +84,7 @@ export async function getMonetizationAddress(creatorPublicKey:PublicKey, videoId
 }
 
 
-export async function updateMonetizationOnChain(v:StudioGetOneOutput, m:typeof monetization.$inferSelect){
+export async function updateMonetizationOnChain(v:StudioGetOneOutput, m:typeof monetization.$inferSelect,onComplete?:(tx:string)=>void){
     
     if(!SolanaState.connection){
         throw new Error("Connection not found");
@@ -130,8 +130,8 @@ export async function updateMonetizationOnChain(v:StudioGetOneOutput, m:typeof m
         const versionedTx = new VersionedTransaction(transaction.compileMessage());
         const signedTx = await SolanaState.provider.wallet.signTransaction(versionedTx)
         const tx = await connection.sendRawTransaction(signedTx.serialize())
-        console.log("initialize monetization tx", tx)
-        return tx;
+        console.log("udpated monetization tx", tx)
+        onComplete?.(tx)
     } catch (e) {
         console.log("error", e)
         throw e;
