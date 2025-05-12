@@ -48,7 +48,7 @@ export const SearchInput = () => {
                 <Input 
                 type="text" 
                 placeholder="Search for products, categories, brands and more" 
-                className="w-full  pl-4 py-2 pr-12 rounded-l-full border border-dripcast_blue focus:outline-none text-dripcast focus:border-alice-blue bg-alice_blue/90"
+                className="w-full  pl-4 py-2 pr-12 rounded-l-full border border-dripcast_blue focus:outline-none text-dripcast focus:border-alice-blue bg-seasalt/90"
                 value={value}
                 onChange={(e)=>setValue(e.target.value)}
                 />
@@ -65,7 +65,7 @@ export const SearchInput = () => {
             </div>
             <button type="submit" 
             disabled={!value.trim()}
-            className="bottom-0 px-5 border-l-0 text-dripcast rounded-r-full border  border-dripcast_blue disabled:bg-alice_blue/60 disabled:cursor-not-allowed bg-alice_blue/90">
+            className="bottom-0 px-5 border-l-0 text-dripcast rounded-r-full border  border-dripcast_blue disabled:bg-seasalt/60 disabled:cursor-not-allowed bg-seasalt/90">
                 <SearchIcon className="size-5"/>
             </button>
         </form>

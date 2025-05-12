@@ -12,13 +12,15 @@ export default withUt({
 	
   	extend: {
   		colors: {
+			
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
 			dripcast:'darkslategrey',
-			darkslategray:'#2F4F4F',
-			dripcast_blue:'#90D4CD',
-			alice_blue:'#F0F8FF',
-			indian_red: '#CD5040',
+			onyx:'#2E3234',
+			dripcast_blue:'#03E4FF',
+			seasalt:"#FCFAFA",
+			graypurple:'#94778B',
+			crayola_red: '#EE4266',
 			coral:'#FF7F50',
 			brown: '#96705D',
   			card: {

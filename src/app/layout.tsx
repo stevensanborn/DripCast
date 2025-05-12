@@ -1,14 +1,14 @@
 import "./globals.css";
-import { Inter } from "next/font/google";
+// import { Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { TRPCProvider } from "@/trpc/client";
 import { Toaster } from "@/components/ui/sonner";
 
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
+// const inter = Inter({
+//   subsets: ["latin"],
+//   variable: "--font-inter",
+// });
 
 export default function RootLayout({
   children,
@@ -19,7 +19,7 @@ export default function RootLayout({
     <ClerkProvider >
     <html lang="en" className="dark" >
       <body
-        className={inter.className}
+        // className={inter.className}
       >
         <TRPCProvider>
           <Toaster />

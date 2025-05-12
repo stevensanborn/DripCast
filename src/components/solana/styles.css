@@ -11,10 +11,10 @@
    height: 2.25rem;
    border-radius: calc(var(--radius) - 2px);
 
-   border-color: hsl(var(--input));
+   /* border-color: hsl(var(--input)); */
    color: inherit;
-   
-   background-color: hsl(var(--background));
+
+   /* background-color: hsl(var(--background)); */
    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
    transition-timing-function: cubic-bezier(.4, 0, .2, 1);
    transition-duration: .15s;
@@ -23,12 +23,13 @@
    --tw-shadow: 0 1px 2px 0 #0000000d;
     --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
     box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-
+    background:transparent;
+    
 }
 
 .wallet-adapter-button-trigger.wallet-adapter-button:not([disabled]):hover{
-    background: rgba(0, 248, 248, 0.25);
+    /* background: rgba(0, 248, 248, 0.25); */
     color: hsl(var(--accent-foreground));
-
+    background: hsl(var(--accent));
 }
 

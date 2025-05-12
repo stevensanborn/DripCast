@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wdth,wght@0,75..125,200..900;1,75..125,200..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -32,7 +34,7 @@
     --muted-foreground: 0 0% 45.1%;
 
     --accent: 0 0% 96.1%;
-
+    
     --accent-foreground: 0 0% 9%;
 
     --destructive: 0 84.2% 60.2%;
@@ -75,7 +77,7 @@
     --sidebar-ring: 217.2 91.2% 59.8%}
   .dark {
 
-    --background: 0 0% 10.0%;
+    --background: 216, 6%, 17%;
 
     --foreground: 0 0% 98%;
 
@@ -99,7 +101,7 @@
 
     --muted-foreground: 0 0% 63.9%;
 
-    --accent: 0 0% 14.9%;
+    --accent: 318, 12%, 21%;
 
     --accent-foreground: 0 0% 98%;
 
@@ -134,7 +136,7 @@
 
     --sidebar-accent: 240 3.7% 15.9%;
 
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 347, 83%, 60%;
 
     --sidebar-border: 240 3.7% 15.9%;
 
@@ -146,10 +148,14 @@
     --video-player-scrubber-dot-size: 10px;
   }
 
-    
+  html {
+    font-family: 'Mona Sans', sans-serif;
+  }
 }
 
-
+.bg-background{
+  background-color: #2E3234;
+}
 
 @layer base {
   * {
@@ -161,7 +167,7 @@
 }
 
 .nav-linear-gradient{
-  background: linear-gradient(185deg, cyan, silver);
+  background: linear-gradient(15deg, #EE4266,#aa507a );
 }
 
   .no-scrollbar::-webkit-scrollbar {
