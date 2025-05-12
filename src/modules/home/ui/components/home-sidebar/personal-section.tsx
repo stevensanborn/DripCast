@@ -3,10 +3,11 @@
 import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuItem ,SidebarMenuButton, SidebarGroupLabel} from "@/components/ui/sidebar"
 import { useAuth } from "@clerk/nextjs"
 import { useClerk } from "@clerk/nextjs"
-import { HistoryIcon,  ListVideoIcon,  ThumbsUpIcon } from "lucide-react"
+import { HistoryIcon,  ListVideoIcon,  ThumbsUpIcon, ClapperboardIcon } from "lucide-react"
 import Link from "next/link"
 
 const items = [
+    {title: "Creator", icon: ClapperboardIcon, auth:true, url: "/studio"},
     {title: "History", icon: HistoryIcon, auth:true, url: "/history"},
     {title: "Liked Videos", icon: ThumbsUpIcon,auth:true,url: "/playlists/liked"},
     {title: "All Playlists", icon: ListVideoIcon,auth:false,url: "/playlists"},
@@ -38,8 +39,8 @@ export const PersonalSection = () => {
                             }} 
                             >
 
-                                <Link prefetch  href={item.url} className="flex items-center gap-4">
-                                   <item.icon />
+                                <Link prefetch  href={item.url} className="flex items-center gap-4 ">
+                                   <item.icon  />
                                    <span className="text-sm font-medium">{item.title}</span>
                                 </Link>
                             </SidebarMenuButton>
