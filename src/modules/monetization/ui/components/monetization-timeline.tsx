@@ -262,21 +262,21 @@ export const MonetizationTimeline = ({ playbackId, playerRef, selectedMonetizati
                 </div>
 
             </div>
-            <div className="h-full w-2 bg-muted-foreground absolute top-0 left-0 bottom-0 rounded-l-full"></div>
-            <div className="h-full w-2 bg-muted-foreground absolute top-0 right-0 bottom-0 rounded-r-full"></div>
+            <div className="h-full w-[8px] bg-muted-foreground absolute top-0 left-0 bottom-0 rounded-l-xl"></div>
+            <div className="h-full w-[8px] bg-muted-foreground absolute top-0 right-0 bottom-0 rounded-r-xl"></div>
             
             <div ref={mouseLineRef} className="mouse-line absolute top-0 left-0 bottom-0 w-[1px] bg-muted-foreground overflow-visible flex-none" >
                 <div className="absolute text-xs text-muted-foreground" style={{ top: '-20px' }}></div>
             </div>
-            <div className="absolute top-0 left-0 bottom-0 w-[1px] bg-red-500/50 video-line" ref={videoLineRef}></div>
+            <div className="absolute top-0 left-0 bottom-0 w-[1px] bg-red-600/50 video-line" ref={videoLineRef}></div>
            {selectedMonetization && (
-            <div className="absolute top-0 left-0 bottom-0 right-0  bg-muted-foreground/20 rounded-xl border-[1px] border-dripcast_blue" ref={refSpan}>
-                <div className="absolute top-0 left-0 bottom-0 w-[9px] bg-dripcast_blue rounded-l-full cursor-pointer flex items-center justify-center" ref={refLeftLimit}
+            <div className="absolute top-0 left-0 bottom-0 right-0 bg-muted-foreground/20 rounded-xl border-[1px] border-dripcast_blue" ref={refSpan}>
+                <div className="absolute top-[-1px] left-0 bottom-[-1px] w-[8px] bg-dripcast_blue rounded-l-lg cursor-pointer flex items-center justify-center" ref={refLeftLimit}
                     onMouseDown={(e) => handleMouseDown(e, 'left')}
                 >
                     
                 </div>
-                <div className="absolute top-0 right-0 bottom-0 w-[9px] bg-dripcast_blue rounded-r-full cursor-pointer flex items-center justify-center" ref={refRightLimit}
+                <div className="absolute top-[-1px] right-0 bottom-[-1px] w-[8px] bg-dripcast_blue rounded-r-lg cursor-pointer flex items-center justify-center" ref={refRightLimit}
                     onMouseDown={(e) => handleMouseDown(e, 'right')}
                 ></div>
             </div>
