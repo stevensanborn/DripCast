@@ -12,13 +12,18 @@ dripcast = "7mHNUhhpqGZWMyEwCEP1eGMktSDz2qYfU1UtFQo7ZBRc"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "devnet"
+# cluster = "devnet"
+cluster = "https://turbine-solanad-4cde.devnet.rpcpool.com/168dd64f-ce5e-4e19-a836-f6482ad6b396"
 # cluster = "localnet"
+# cluster = "https://turbine-solanad-1176.devnet.rpcpool.com/fb59aa59-6117-46f0-8657-236aa21dfe5b"
+#cluster = "https://devnet.helius-rpc.com/?api-key=e6bc5c8f-3dd6-4bfb-9b3b-b198a19d7a65"
+# cluster = "https://turbine-solanad-43ad.devnet.rpcpool.com/abdbf6bf-acc3-49e8-8075-4422a5789e87"
 wallet = "../wallet/DRP89vhFSNTpLYJWTU4VBYjcxQ1bEGZ9qZEd3d68oee5.json"
 
 [scripts]
 init_dripcast = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 scripts/init.ts"
-test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.test.ts"
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.test.ts -g \"DRIPCAST PROGRAM INITIALIZATION\""
+test_local = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.test.ts "
 deploy_dev = "solana program deploy ./target/deploy/dripcast.so --program-id ./target/deploy/dripcast-keypair.json "
 upgrade_idl = "anchor idl upgrade 7mHNUhhpqGZWMyEwCEP1eGMktSDz2qYfU1UtFQo7ZBRc -f ./target/idl/dripcast.json"
 close_creator = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 scripts/closeCreator.ts"

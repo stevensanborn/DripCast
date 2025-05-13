@@ -12,6 +12,10 @@ import { updateTestSuite } from "./suites/update";
 import { initializeTestSuite } from "./suites/initalize";
 import { transferTestSuite } from "./suites/transfer";
 import { withdrawlCreatorTestSuite } from "./suites/withdrawl";
+
+import CREATOR_WALLET from "../../wallet/creator.json"
+import CONSUMER_WALLET from "../../wallet/consumer.json"
+
 describe("dripcast", () => {
 
   // Configure the client to use the local cluster.
@@ -31,9 +35,11 @@ describe("dripcast", () => {
   before(async function() {
     //setup client and user
     console.log("Setting up users");
-    let ContentCreator = await setupNewKeyPair(provider.connection);
+    let ContentCreator = anchor.web3.Keypair.fromSecretKey(new Uint8Array(CREATOR_WALLET));
+    // await setupNewKeyPair(provider.connection);
     console.log("ContentCreator Created : ",ContentCreator.publicKey.toBase58());
-    let ContentConsumer = await setupNewKeyPair(provider.connection);
+    let ContentConsumer = anchor.web3.Keypair.fromSecretKey(new Uint8Array(CONSUMER_WALLET));
+    // await setupNewKeyPair(provider.connection);
     console.log("ContentConsumer Created : ",ContentConsumer.publicKey.toBase58());
     console.log("Setting up users complete");
 
@@ -54,8 +60,16 @@ describe("dripcast", () => {
   test("DRIPCAST PROGRAM INITIALIZATION", async () => {
 
     //add some funds to the dripSigner
-    await airdrop(provider.connection,dripSigner.publicKey,1);
-    
+    // await airdrop(provider.connection,dripSigner.publicKey,1);
+    const [pkey, _bump] = PublicKey.findProgramAddressSync(
+      [anchor.utils.bytes.utf8.encode("dripcast")], program.programId);
+      let dripcastAccountInfo = await program.account.dripcast.fetch(pkey);
+      
+      if(dripcastAccountInfo){
+        console.log("DRIPCAST ACCOUNT ALREADY EXISTS", pkey.toBase58());
+        context.dripcast = pkey;
+        return;
+      }
     // Add your test here.
     const tx = await program.methods.initializeDripcast().accounts({
     }).signers([dripSigner]).rpc();
@@ -64,9 +78,7 @@ describe("dripcast", () => {
 
     assert.ok(tx);
     
-    const [pkey, _bump] = PublicKey.findProgramAddressSync(
-      [anchor.utils.bytes.utf8.encode("dripcast")], program.programId);
-      let dripcastAccountInfo = await program.account.dripcast.fetch(pkey);
+       dripcastAccountInfo = await program.account.dripcast.fetch(pkey);
       assert.ok(dripcastAccountInfo)
       console.log("GOT DRIPCAST ACCOUNT", pkey.toBase58());
       assert.strictEqual(dripcastAccountInfo.owner.toBase58(),dripSigner.publicKey.toBase58());
