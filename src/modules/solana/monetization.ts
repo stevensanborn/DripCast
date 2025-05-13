@@ -139,7 +139,7 @@ export async function updateMonetizationOnChain(v:StudioGetOneOutput, m:typeof m
 
 }
 
-export async function closeMonetization(v:StudioGetOneOutput, m:typeof monetization.$inferSelect){
+export async function closeMonetization(v:StudioGetOneOutput, m:typeof monetization.$inferSelect,onComplete?:(tx:string)=>void){
 
     if(!SolanaState.connection){
         throw new Error("Connection not found");
@@ -179,6 +179,7 @@ export async function closeMonetization(v:StudioGetOneOutput, m:typeof monetizat
         const signedTx = await SolanaState.provider.wallet.signTransaction(versionedTx)
         const tx = await connection.sendRawTransaction(signedTx.serialize())
         console.log("close monetization tx", tx)
+        onComplete?.(tx)
         return tx;
     } catch (e) {
         console.log("error", e)

@@ -110,7 +110,7 @@ export const monetizationRouter = createTRPCRouter({
         const [createdPayment] = await db.insert(monetizationPayments).values({
             monetizationId,
             transactionId,
-            amount:amount.toString(),
+            amount:amount,
             userId:user.id
         }).returning()
         return createdPayment

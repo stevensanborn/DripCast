@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 import Link from "next/link"
 import { MonetizationTimeline } from "@/modules/monetization/ui/components/monetization-timeline"
-import { initializeMonetization, updateMonetizationOnChain } from "@/modules/solana/monetization"
+import { closeMonetization, initializeMonetization, updateMonetizationOnChain } from "@/modules/solana/monetization"
 import { SolanaState } from "@/components/solana/solana-state"
 import { Separator } from "@radix-ui/react-separator"
 
@@ -37,7 +37,8 @@ export const MonetizationSectionContent = ({videoId}:MonetizationSectionProps) =
     const [duration,setDuration] = useState(0)
     const [uiMonetizations,setUiMonetizations] = useState<UiMonetization[]>([])
     const [selectedMonetization,setSelectedMonetization] = useState<UiMonetization | null>(null)
-
+    const [priceSOLUSD,setPriceSOLUSD] = useState(0)
+    const [priceUSD,setPriceUSD] = useState("")
 
     const insertMonetization = trpc.monetization.create.useMutation({
         onSuccess: () => {
@@ -68,57 +69,107 @@ export const MonetizationSectionContent = ({videoId}:MonetizationSectionProps) =
             toast.error(error.message)
         }
     })
+    const removeMonetization = trpc.monetization.remove.useMutation({
+        onSuccess: () => {
+          utils.monetization.getMany.invalidate()
+          toast.success("Monetization deleted")
+        },
+        onError: (error) => {
+         toast.error(error.message)
+        }
+    })
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const formScheme = z.object({
         id: z.string(),
-        title: z.string(),
-        description: z.string().nullable(),
+        title: z.string().min(2),
+        description: z.string(),
         videoId: z.string(),
         type: z.enum(['purchase', 'snippet', 'payperminute']),
-        cost: z.string(),
+        cost: z.string().min(1).transform(val => parseInt(val, 10)),
         startTime: z.string().nullable().transform(v => v === "" ? null : v),
         endTime: z.string().nullable().transform(v => v === "" ? null : v),
         txId: z.string().nullable(),
         createdAt: z.date(),
         updatedAt: z.date(),
-        duration: z.string().nullable().transform(v => v === "" ? null : v),
+        duration: z.string().min(1).transform(val =>  parseInt(val, 10)),
         creatorKey: z.string()
     })
-
-    const form = useForm<z.infer<typeof formScheme>>({
-        defaultValues: {
-            id: '',
-            title: '',
-            description: '',
-            videoId: '',
-            type: 'payperminute',
-            cost: '',
-            startTime: '',
-            endTime: '',
-            txId: '',
-            duration: '',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            creatorKey: ''
-        }
-    })
-
-    const formCurrent = useForm<z.infer<typeof formScheme>>({})
+    
+    // const form = useForm<z.infer<typeof formScheme>>({
+    //     defaultValues: {
+    //         id: '',
+    //         title: '',
+    //         description: '',
+    //         videoId: '',
+    //         type: 'payperminute',
+    //         cost: 0,
+    //         startTime: '',
+    //         endTime: '',
+    //         txId: '',
+    //         duration: 0,
+    //         createdAt: new Date(),
+    //         updatedAt: new Date(),
+    //         creatorKey: ''
+    //     }
+    // })
+    const getPrice=async()=>{
+        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd');
+        const data = await response.json();
+        setPriceSOLUSD(data.solana.usd)
+       
+    }
+    useEffect(() => {
+        getPrice()
+    }, [])
+ 
+    const formCurrent = useForm<z.infer<typeof formScheme>>({mode:"onChange"})
 
     const onSubmit = async (data: z.infer<typeof formScheme>) => {
-        console.log(data)
+        let errors = false
+        if(data.title.length < 2){
+            formCurrent.setError('title',{message:"Title is required"})
+            errors = true
+        }
+
+        if(!data.startTime){
+            formCurrent.setError('startTime',{message:"Start is required"})
+            errors = true
+        }
+        if (data.startTime && isNaN(Number(data.startTime))) {
+            formCurrent.setError('startTime', { message: "Start is not a number" });
+            errors = true;
+        }
+        if(data.endTime  && isNaN(Number(data.endTime))){
+            formCurrent.setError('endTime',{message:"End is not a number"})
+            errors = true
+        }
+
+        if(data.cost == 0 || data.cost < 0.0001){
+            formCurrent.setError('cost',{message:"A minimum of 0.0001 SOL is required"})
+            errors = true
+        }
+
+        if(errors){
+            return
+        }
+
         if(data.id.indexOf('temp') !== -1){
-            
+            console.log('data',data)
             type InsertMonetizationInput = Omit<z.infer<typeof formScheme>, "id"> & { type: "purchase" | "snippet" | "payperminute", creatorKey: string };
 
-            
-            const d:InsertMonetizationInput = {...data,
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { id, ...rest } = data;
+            const d:InsertMonetizationInput = {
+                ...rest,
+                cost: data.cost * 1_000_000_000, //CONVERSION FROM SOL TO LAMPORT
                 type: data.type as "purchase" | "snippet" | "payperminute",
-                creatorKey: SolanaState.wallet?.publicKey?.toBase58() ?? ""
+                creatorKey: SolanaState.wallet?.publicKey?.toBase58() ?? "",
             }
+           
+
             //inster into db
-            
+            console.log('d',d)
             await insertMonetization.mutateAsync(d,{
                 onSuccess: (result) => {
                     
@@ -135,10 +186,16 @@ export const MonetizationSectionContent = ({videoId}:MonetizationSectionProps) =
                 } 
             });
         }else {
-            updateMonetizationOnChain(video,{...data},(tx:string)=>{
+            data.cost = data.cost * 1_000_000_000 //CONVERSION FROM SOL TO LAMPORT
+            updateMonetizationOnChain(video,{...data,
+            },(tx:string)=>{
                 toast.success("Monetization updating...... "+tx)
-
-                updateMonetization.mutate(data,{
+                data.txId = tx
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const  {createdAt,updatedAt, ...rest} = data
+                console.log('data',rest)
+                
+                updateMonetization.mutate(rest,{
                     onSuccess: () => {
                         toast.success("Monetization updated")
                         utils.monetization.getMany.invalidate({ videoId })
@@ -182,32 +239,38 @@ export const MonetizationSectionContent = ({videoId}:MonetizationSectionProps) =
     }, [formCurrent,selectedMonetization])
 
     useEffect(() => {
-        setUiMonetizations(monetizations.map((monetization) => ({...monetization})))
+        //copy monetizations over ot and array 
+        setUiMonetizations(monetizations.map((monetization) =>{
+            return {...monetization,
+                cost: monetization.cost/1_000_000_000   
+            }
+            } ))
     }, [monetizations])
 
 
     useEffect(() => {
         console.log('selectedMonetization',selectedMonetization)
         const { unsubscribe } = formCurrent.watch((value) => {
+            
+            const usdPric=priceSOLUSD * (value.cost??0)
+            
+            setPriceUSD(usdPric.toFixed(3))
             if(selectedMonetization){
                 selectedMonetization.title = value.title??""
                 selectedMonetization.description = value.description??""
                 selectedMonetization.startTime = value.startTime??""
                 selectedMonetization.endTime = value.endTime??""
-                selectedMonetization.duration = value.duration??""
-                selectedMonetization.cost = value.cost??""
+                selectedMonetization.duration = value.duration??0
+                selectedMonetization.cost = value.cost??0
             }
         })
         
         return () => unsubscribe()
-      }, [formCurrent.watch])
+      }, [formCurrent.watch,priceSOLUSD])
 
     const onChangeStartTime = useCallback( (t:number,monetization:UiMonetization)=>{
-        console.log('onChangeStartTime',monetization)
         if(monetization){
-            console.log(t)
             monetization.startTime = t.toString()
-           
             formCurrent.setValue('startTime',t.toString())
         }
     },[formCurrent])
@@ -234,8 +297,8 @@ return (
                     setUiMonetizations([...uiMonetizations, {
                         title: 'New Monetization - '+(uiMonetizations.length+1),
                         videoId: videoId,
-                        type: 'payperminute',
-                        cost: '',
+                        type: 'snippet',
+                        cost: 0,
                         startTime: '',
                         endTime: `${duration}`,
                         description: '',
@@ -243,7 +306,7 @@ return (
                         updatedAt: new Date(),
                         createdAt: new Date(),
                         txId: '',
-                        duration: '0',
+                        duration: 0,
                         id: 'temp-'+(uiMonetizations.length+1)
                     }])
                 }} >
@@ -266,24 +329,43 @@ return (
                                 
                                 <p className="text-sm font-bold flex-1">{monetization.title}</p>
                                 
-                                <Button variant="outline" size="icon" onClick={(e) => {
+                                <Button variant="outline" size="icon" onClick={async (e) => {
                                     e.stopPropagation()
                                     console.log('save monetization',monetization.id)
+                                    //  let out = await formCurrent.trigger()
+                                     
+                                    console.log('formCurrent',formCurrent.formState.errors,formCurrent.formState.isValid)
                                     formCurrent.handleSubmit(onSubmit)()
                                     
                                 }}>
                                     <SaveIcon className="size-4"></SaveIcon>
                                 </Button>
-                                <Button variant="outline" size="icon" onClick={(e) => {
+                                <Button variant="outline" size="icon" onClick={async (e) => {
                                     e.stopPropagation()
                                     if(monetization.id.indexOf('temp') !== -1){
                                         setSelectedMonetization(null)
                                         setUiMonetizations(uiMonetizations.filter((m) => m.id !== monetization.id))
                                         setSelectedMonetization(null)
                                     }else {
-                                        setSelectedMonetization(null)
-                                        console.log('delete monetization',monetization.id)
-                                        setSelectedMonetization(null)
+
+                                        try{
+                                            closeMonetization(video,monetization,(tx:string)=>{
+                                                removeMonetization.mutate({id:monetization.id})
+                                                toast.success("Monetization closed "+tx)
+                                            })
+                                   
+                                            setSelectedMonetization(null)
+                                            console.log('delete monetization',monetization.id)
+                                            
+                                            }
+                                            catch(e: Error | unknown){
+                                                const error = e instanceof Error ? e : new Error('An unknown error occurred');
+                                                toast.error(error.message)
+                                                setSelectedMonetization(null)
+                                            }
+                                           
+                                            
+                                       
                                     }
                                 }}>
                                     <TrashIcon className="size-4"></TrashIcon>
@@ -318,8 +400,8 @@ return (
         </div>
     </div>
     <div className="w-full flex flex-col">
-    <Form {...form}>
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+    <Form {...formCurrent}>
+    <form onSubmit={formCurrent.handleSubmit(onSubmit)} className="space-y-8">
     {   selectedMonetization ? (
             <>
                 <div className="w-full flex items-start justify-evenly">
@@ -329,9 +411,9 @@ return (
                                             <FormItem>
                                             <FormLabel>Title</FormLabel>
                                             <FormControl>
-                                            <Input {...field} placeholder="Title"  value={field.value ?? ""} />
+                                            <Input {...field} placeholder="Title"  value={field.value ?? ""}  />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage ></FormMessage>
                                             </FormItem>
                                             )}/>
 
@@ -354,12 +436,12 @@ return (
                             
                             <div className="flex flex-col w-1/2 ml-4">
                                 
-                                <div className="flex  gap-2 justify-start">
+                                <div className="flex  gap-4 justify-start">
                                                 <FormField control={formCurrent.control} name="startTime" render={({ field }) => (
                                                     <FormItem>
                                                         <FormLabel className="text-xs text-foreground-muted">Start (secs)</FormLabel>
                                                         <FormControl>
-                                                            <Input {...field} placeholder="Start Time" value={field.value ?? ""} className="w-16"  />
+                                                            <Input {...field} placeholder="Start Time" value={field.value ?? ""} className="w-24"  />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
@@ -369,7 +451,7 @@ return (
                                                             <FormItem>
                                                                 <FormLabel className="text-xs text-foreground-muted">End (secs)</FormLabel>
                                                                 <FormControl>
-                                                                    <Input {...field} placeholder="End Time" value={field.value ?? duration} className="w-16" />
+                                                                    <Input {...field} placeholder="End Time" value={field.value ?? duration} className="w-24" />
                                                                 </FormControl>
                                                                 <FormMessage />
                                                             </FormItem>
@@ -385,7 +467,7 @@ return (
                                         <FormControl  >
                                             <Input {...field} placeholder="Duration" className="w-32"  value={field.value ?? ""} /> 
                                         </FormControl>
-                                        <FormMessage />                                     
+                                        <FormMessage />
                                     </FormItem>
                                 )} />
                                 </div>
@@ -393,13 +475,13 @@ return (
                                 <FormField control={formCurrent.control} name="cost" render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="text-xs text-foreground-muted">Cost</FormLabel>
-                                        <FormDescription>Set the cost of this purchase. Priced in Sol.  </FormDescription>
+                                        <FormDescription>Enter the cost of this purchase. Priced in Sol.  </FormDescription>
                                         <FormControl  >
                                             <Input {...field} placeholder="0" className="w-32"  value={field.value ?? ""} /> 
                                         </FormControl>
-                                        <FormMessage />                                     
+                                        <FormMessage />
                                     </FormItem>
-                                )} />
+                                )} /><span className="text-xs text-foreground-muted"> ${priceUSD}</span>
                                 </div>
                             
 
@@ -415,6 +497,7 @@ return (
 
                 <p className="text-md text-muted-foreground">No monetization selected. Choose one from the list or create a new one.</p>
             )}
+            <Button type="submit">Submit</Button>
             </form>
         </Form> 
     </div>

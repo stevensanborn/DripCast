@@ -5,7 +5,7 @@ import { DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/co
 import { Form, FormField, FormLabel, FormMessage, FormControl, FormItem } from "@/components/ui/form"
 import { DropdownMenu } from "@/components/ui/dropdown-menu"
 import { trpc } from "@/trpc/client"
-import {  MoreVerticalIcon, CopyIcon, TrashIcon, CheckIcon, Globe2Icon, LockIcon, ImagePlusIcon, RotateCcw, SparklesIcon, RefreshCcw, PencilIcon, Edit2Icon } from "lucide-react"
+import {  MoreVerticalIcon, CopyIcon, TrashIcon, CheckIcon, Globe2Icon, LockIcon, ImagePlusIcon, RotateCcw, SparklesIcon, RefreshCcw,  Edit2Icon } from "lucide-react"
 import { Suspense, useEffect, useState } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 import { useForm } from "react-hook-form"
@@ -24,7 +24,6 @@ import Image from "next/image"
 import { THUMBNAIL_FALLBACK_URL } from "@/modules/videos/constants"
 import { ThumbnailUploadModal } from "@/modules/studio/ui/components/thumbnail-upload-modal"
 import { APP_URL, INFINITE_QUERY_LIMIT } from "@/constants"
-import { closeMonetization } from "@/modules/solana/monetization"
 
 
 interface FormSectionProps {
@@ -79,15 +78,6 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
         }
     })
 
-    const removeMonetization = trpc.monetization.remove.useMutation({
-        onSuccess: () => {
-          utils.monetization.getMany.invalidate()
-          toast.success("Monetization deleted")
-        },
-        onError: (error) => {
-         toast.error(error.message)
-        }
-    })
     const revalidateVideo = trpc.videos.revalidate.useMutation({
         onSuccess: () => {
         //   utils.studio.getMany.invalidate()
@@ -216,9 +206,9 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
                                     getMonetizationType(monetization.type)
                                 }</p>
                                 <p className="text-xs">{
-                                    monetization.cost
-                                }</p>
-                        <div className="absolute top-1 right-1">
+                                    (monetization.cost / 1_000_000_000).toFixed(4)
+                                } SOL</p>
+                        {/* <div className="absolute top-1 right-1">
                         <DropdownMenu >
                         <DropdownMenuTrigger asChild >
                             <Button size="icon" className="size-6 flex items-center justify-center rounded-xl" variant="secondary" ><MoreVerticalIcon className="size-2" ></MoreVerticalIcon></Button>
@@ -252,7 +242,7 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
                                     
                         </DropdownMenuContent>
                         </DropdownMenu>
-</div>
+</div> */}
                             </div>
                         ))}
                     </div>

@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, uniqueIndex, pgEnum, foreignKey, doublePrecision, varchar, decimal } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, uniqueIndex, pgEnum, foreignKey, doublePrecision, varchar, bigint,decimal } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from "drizzle-zod";
 import { primaryKey } from "drizzle-orm/pg-core";
@@ -265,8 +265,8 @@ export const monetization = pgTable("monetization",{
     txId: varchar("transaction_id",{length:100}),
     videoId: uuid("video_id").references(()=>videos.id,{onDelete:"cascade"}).notNull(),
     type: monetizationType("monetization_type").notNull(),
-    cost: decimal("price",{precision:10,scale:2}).notNull(),
-    duration:decimal("duration"),
+    cost: bigint("price",{mode:"number"}).notNull(),
+    duration:bigint("duration",{mode:"number"}).default(0),
     startTime:decimal("start_time"),
     endTime:decimal("end_time"),
     creatorKey:varchar("creator_key",{length:44}).notNull(),
@@ -311,7 +311,7 @@ export const monetizationPayments = pgTable("monetization_payments",{
     userId: uuid("user_id").references(()=>users.id,{onDelete:"cascade"}).notNull(),
     transactionId: varchar("transaction_id",{length:100}).notNull(),
     monetizationId: uuid("monetization_id").references(()=>monetization.id,{onDelete:"cascade"}).notNull(),
-    amount: decimal("amount",{precision:10,scale:2}).notNull(),
+    amount: bigint("amount",{mode:"number"}).notNull(),
     createdAt:timestamp("created_at").notNull().defaultNow(),
     updatedAt:timestamp("updated_at").notNull().defaultNow(),
 })

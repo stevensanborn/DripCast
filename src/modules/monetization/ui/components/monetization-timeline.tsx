@@ -112,10 +112,10 @@ export const MonetizationTimeline = ({ playbackId, playerRef, selectedMonetizati
                 let pos = left + deltaX
                 pos = Math.min(Math.max(0, pos), timelineRect!.width)
                 refSpan.current!.style.left = `${pos}px`
+               
                 if (playerRef.current) {
                     const time = Math.floor(pos / timelineRect!.width * playerRef.current!.getDuration() * 100) / 100
                     playerRef.current.seekTo(pos / timelineRect!.width,'fraction')
-                    // console.log('time',time)
                     if(selectedMonetization){
                         onChangeStartTime(time,selectedMonetization)
                     }
@@ -129,7 +129,7 @@ export const MonetizationTimeline = ({ playbackId, playerRef, selectedMonetizati
                 pos = Math.min(Math.max(0, pos), timelineRect!.width)
                 refSpan.current!.style.right = `${pos}px`
                 if (playerRef.current) {
-                    const time = (1 - pos / timelineRect!.width) * playerRef.current!.getDuration()
+                    const time = (1 - pos / timelineRect!.width) * playerRef.current.getDuration()
                     playerRef.current.seekTo(pos / timelineRect!.width,'fraction')
                     if(selectedMonetization){
                         onChangeEndTime(time,selectedMonetization)
@@ -140,7 +140,7 @@ export const MonetizationTimeline = ({ playbackId, playerRef, selectedMonetizati
         }
         window.addEventListener('mouseup', onMouseUp)
         window.addEventListener('mousemove', onMouseMove)
-    }, [selectedMonetization,onChangeStartTime,onChangeEndTime,playerRef])
+    }, [selectedMonetization,onChangeStartTime,onChangeEndTime,playerRef,refSpan])
 
     const setThumbsArray = useCallback(() => {
         if (!timelineRef.current || !storyboardJSON) return
