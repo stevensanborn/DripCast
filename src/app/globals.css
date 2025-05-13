@@ -140,12 +140,13 @@
 
     --sidebar-border: 240 3.7% 15.9%;
 
-    --sidebar-ring: 217.2 91.2% 59.8%
+    --sidebar-ring: 217.2 91.2% 59.8%;
   
-    --video-player-controls-height: 50px;
     --video-player-scrubber-height: 15px;
     
     --video-player-scrubber-dot-size: 10px;
+
+    --video-player-controls-height: 50px;
   }
 
   html {
@@ -181,7 +182,6 @@
 
 
 .video-client-player{
-
   transition: bottom 0.5s ease-in-out;
 }
 
@@ -190,15 +190,15 @@
   bottom: 1px;
 }
 .scrubber-container{
-  transition: height 0.25s ease-in-out;
-  
-  height: 20px;
+  /* transition: height 0.25s ease-in-out; */
+  transition: filter 0.25s ease-in-out;
+  /* height: 20px; */
 }
 .scrubber-container:hover{
- 
+  filter:drop-shadow(2px 3px 3px rgba(0,0,0,0.5))
 }
 .scrubber{
-  transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+  /* transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out; */
 }
 
 
@@ -213,15 +213,15 @@
 
 }
 .monetization-bar{
-  opacity: 0.85;
-  height: 2px;
+  opacity:1;
+  /* height: 2px; */
   transition: top 0.25s ease-in-out, opacity 0.25s ease-in-out, height 0.25s ease-in-out;
 }
 .scrubber-container:hover .monetization-bar{
   top:0;
   opacity: 1;
-  height: 10px;
-  background-color: coral;
+  /* height: 10px; */
+  /* background-color: coral; */
 }
 
 .monetization-timeline-container {

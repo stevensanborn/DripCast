@@ -35,6 +35,8 @@ export async function initializeMonetization( m:typeof monetization.$inferSelect
     const transaction = new Transaction();
 
     console.log("address", monetizationAddress.toBase58())
+    //check if the monetization state already exists
+    
     const pre = await program.methods.initializeMonetizationState(
         monetizationAddress,
         "default",

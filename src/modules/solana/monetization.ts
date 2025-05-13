@@ -84,6 +84,21 @@ export async function getMonetizationAddress(creatorPublicKey:PublicKey, videoId
 }
 
 
+export async function getMonetizationStateAddress(monetizationAddress:PublicKey, creatorPublicKey:PublicKey){
+    console.log("get Monetization State Address of ", monetizationAddress.toBase58())
+    const provider = SolanaState.provider;
+    if(!provider){
+        throw new Error("Provider not found");
+    }
+    const program = getBasicProgram(provider);
+    const [pkey] : [PublicKey, number] = PublicKey.findProgramAddressSync(
+        [Buffer.from("monetization_state"), monetizationAddress.toBuffer(), creatorPublicKey.toBuffer()], program.programId);
+    console.log("pkey ", pkey.toBase58())
+    return pkey;
+}
+    
+
+
 export async function updateMonetizationOnChain(v:StudioGetOneOutput, m:typeof monetization.$inferSelect,onComplete?:(tx:string)=>void){
     
     if(!SolanaState.connection){
@@ -187,5 +202,57 @@ export async function closeMonetization(v:StudioGetOneOutput, m:typeof monetizat
     }
 }
 
+export async function saveMonetizationState( m:typeof monetization.$inferSelect,  onComplete?:(tx:string)=>void){
 
+    if(!SolanaState.connection){
+        throw new Error("Connection not found");
+    }
+    if(!SolanaState.wallet || !SolanaState.wallet.publicKey){
+        throw new Error("Wallet not found");
+    }
+    if(!SolanaState.provider){
+        throw new Error("Provider not found");
+    }
 
+    //get address of monetization
+    const monetizationAddress = await getMonetizationAddress(SolanaState.wallet.publicKey, await getHexHash(m.id));
+    //get address of the monetization state for user
+
+    let keyState = await getMonetizationStateAddress(monetizationAddress, SolanaState.wallet.publicKey)
+
+    const connection = SolanaState.connection!;
+
+    let stateAccountInfo = await connection.getAccountInfo(keyState);
+    
+    const program = getBasicProgram(SolanaState.provider);
+
+    const { blockhash } = await connection.getLatestBlockhash();
+    const transaction = new Transaction();
+    if(!stateAccountInfo){
+        const pre = await program.methods.initializeMonetizationState(
+        monetizationAddress,
+        "default",
+        new BN(m.cost)
+        ).accounts({ signer: SolanaState.wallet.publicKey }).instruction()
+    
+        transaction.add(pre)
+    }else{
+        const pre = await program.methods.updateMonetizationState(
+            new BN(m.cost)
+        ).accounts({ signer: SolanaState.wallet.publicKey }).instruction()
+    }
+    transaction.recentBlockhash = blockhash
+    transaction.feePayer =  SolanaState.wallet.publicKey
+
+    try{
+        const versionedTx = new VersionedTransaction(transaction.compileMessage());
+        const signedTx = await SolanaState.provider.wallet.signTransaction(versionedTx)
+        const tx = await connection.sendRawTransaction(signedTx.serialize())
+        console.log(" monetization state saved tx", tx)
+        onComplete?.(tx)
+    } catch (e) {
+        console.log("error", e)
+        throw e;
+    }
+
+}

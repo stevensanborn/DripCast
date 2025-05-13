@@ -12,7 +12,9 @@ import { VideoTopRow, VideoTopRowSkeleton } from "../components/video-top-row"
 import { useAuth } from "@clerk/nextjs"
 import { MonetizationThumbs } from "../components/monetization-thumbs"
 import VideoClientPlayer, { VideoPlayerSkeleton } from "../components/video-client-player"
-import { monetizationPayments } from "@/db/schema"
+import { monetization, monetizationPayments } from "@/db/schema"
+import { saveMonetizationState } from "@/modules/solana/monetization"
+import { SolanaState } from "@/components/solana/solana-state"
 
 
 interface VideoSectionProps{
@@ -21,7 +23,6 @@ interface VideoSectionProps{
 
 const VideoSection = ({videoId}:VideoSectionProps) => {
     
-
     return <Suspense fallback={<VideoSectionSkeleton />}>
         <ErrorBoundary fallback={<p>error</p>}>
             <VideoSectionInner videoId={videoId} />
@@ -54,11 +55,37 @@ const VideoSectionInner = ({videoId}:VideoSectionProps) => {
         }
     })
 
+    const createPayment = trpc.monetization.createPayment.useMutation({
+
+        onSuccess:()=>{
+            console.log("Payment created");
+            utils.monetization.getMonetizationPayments.invalidate({videoId})
+            
+        },
+        onError:(error)=>{
+            console.log(error);
+        }
+    });
+    
+    const purchaseMonetization = (m:typeof monetization.$inferSelect)=>{
+    
+        saveMonetizationState(m, async(tx:string)=>{
+            await createPayment.mutateAsync({
+                monetizationId:m.id,
+                transactionId:tx,
+                amount:Number(m.cost)
+            });
+        });
+    
+      }
+
     const handlePlay = () => {
         if(isSignedIn){
             createView.mutate({videoId})
         }
     }
+
+    
 
     return (
         <>
@@ -71,14 +98,27 @@ const VideoSectionInner = ({videoId}:VideoSectionProps) => {
           posterUrl={video.thumbnailUrl}
           videoId={videoId}
           onPlay={handlePlay}
+          muted={true}
           monetizations={monetizations}
           payments={payments as typeof monetizationPayments.$inferSelect[]}
+          purchaseMonetization={purchaseMonetization}
           />  
     
        
         </div>
           <VideoBanner status={video.muxStatus}></VideoBanner>
-          <MonetizationThumbs monetizations={monetizations} />
+            <MonetizationThumbs onClickThumb={(monetization)=>{
+                //check if the monetization is already paid
+                const isPaid = payments.find((payment)=>payment.monetizationId === monetization.id)
+                if(isPaid){
+                    //play the video
+                    handlePlay()
+                }else{
+                    
+                }
+            }} monetizations={monetizations} payments={payments as typeof monetizationPayments.$inferSelect[]}
+            purchaseMonetization={purchaseMonetization}
+            />
           <VideoTopRow video={video} />
         </>
     )
