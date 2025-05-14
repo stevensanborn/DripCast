@@ -6,7 +6,7 @@ import ReactPlayer from "react-player";
 import { monetization, monetizationPayments } from "@/db/schema";
 import { Button } from "@/components/ui/button";
 import { PauseIcon, PlayIcon, VolumeOffIcon, VolumeIcon } from "lucide-react";
-import { trpc } from "@/trpc/client"
+
 
 // import { initializeMonetization } from "@/modules/solana/monetizationState";
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/components/ui/card";

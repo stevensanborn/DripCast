@@ -1,10 +1,10 @@
 "use client"
 import { Card, CardTitle, CardHeader, CardContent } from "@/components/ui/card"
 import { SolanaState } from "@/components/solana/solana-state"
-import { useEffect, useCallback, useState, useMemo } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { Separator } from "@radix-ui/react-separator"
 import { getCreatorAddress, withdrawDripcastAccountBalance } from "@/modules/solana/creator"
-import { Wallet, WalletContextState } from "@solana/wallet-adapter-react"
+import {  WalletContextState } from "@solana/wallet-adapter-react"
 import { Button } from "@/components/ui/button"
 import  {BanknoteArrowDown, RotateCw} from "lucide-react"
 
