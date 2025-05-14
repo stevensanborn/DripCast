@@ -25,6 +25,17 @@ export const StudioSidebar = () => {
             toast.error("Error creating video");
         }
     });
+    const remove = trpc.videos.removeVideo.useMutation({
+        onSuccess: ()=>{
+            // toast.success("Ubn");
+            console.log("removed video");
+            // utils.studio.getMany.invalidate();
+        },
+        onError: ()=>{
+            toast.error("Error creating video");
+        }
+    });
+
 
     const onSuccess = ()=>{
         if(!create.data?.video)return;
@@ -83,7 +94,11 @@ export const StudioSidebar = () => {
         </Sidebar>
 
 
-            <ResponsiveModal title={"Upload Video"} open={!!create.data?.url}  onOpenChange={()=>{create.reset()}} >
+            <ResponsiveModal title={"Upload Video"} open={!!create.data?.url}   onOpenChange={()=>{
+                if(!create.data?.video)return;
+                remove.mutate({id:create.data?.video.id})
+                create.reset()
+                }} >
                 
                 {
                 create.data?.url ? 
