@@ -240,6 +240,7 @@ export async function saveMonetizationState( m:typeof monetization.$inferSelect,
         const pre = await program.methods.updateMonetizationState(
             new BN(m.cost)
         ).accounts({ signer: SolanaState.wallet.publicKey }).instruction()
+        transaction.add(pre)
     }
     transaction.recentBlockhash = blockhash
     transaction.feePayer =  SolanaState.wallet.publicKey
