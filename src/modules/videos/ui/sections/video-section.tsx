@@ -14,7 +14,7 @@ import { MonetizationThumbs } from "../components/monetization-thumbs"
 import VideoClientPlayer, { VideoPlayerSkeleton } from "../components/video-client-player"
 import { monetization, monetizationPayments } from "@/db/schema"
 import { saveMonetizationState } from "@/modules/solana/monetization"
-import { SolanaState } from "@/components/solana/solana-state"
+
 
 
 interface VideoSectionProps{

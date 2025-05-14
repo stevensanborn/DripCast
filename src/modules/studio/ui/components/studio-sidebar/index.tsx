@@ -2,7 +2,7 @@
 
 import { Sidebar, SidebarContent, SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 import Link from "next/link"
-import { Loader2Icon, LogOutIcon,  SquarePlusIcon, VideoIcon } from "lucide-react"
+import { Loader2Icon, LogOutIcon,  SquarePlusIcon, VideoIcon, WalletMinimal } from "lucide-react"
 import { usePathname, useRouter } from "next/navigation"
 import { Separator } from "@/components/ui/separator"
 import StudioSidebarHeader from "./studio-sidebar-header"
@@ -56,6 +56,17 @@ export const StudioSidebar = () => {
                     </Button>
                 </SidebarMenuButton>
                 </SidebarMenuItem>
+
+                <SidebarMenuItem>
+                <SidebarMenuButton isActive={pathname === "/studio/account"} tooltip="Account" asChild> 
+                    <Link prefetch  href="/studio/account">
+                        <WalletMinimal className="size-5"/>
+                        <span className="text-sm font-medium">Account</span>
+                    </Link>
+                </SidebarMenuButton>
+                </SidebarMenuItem>
+
+                
                 <Separator />
                 <SidebarMenuItem>
                 <SidebarMenuButton tooltip="Exit Creator" asChild> 

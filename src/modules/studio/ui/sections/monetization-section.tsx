@@ -492,12 +492,13 @@ return (
                     <Separator orientation="horizontal" className="w-full my-4" />
                     <h1>Txs:</h1>
                 </div>
+                <Button type="submit">Submit</Button>
             </>
             ) : (
 
                 <p className="text-md text-muted-foreground">No monetization selected. Choose one from the list or create a new one.</p>
             )}
-            <Button type="submit">Submit</Button>
+           
             </form>
         </Form> 
     </div>

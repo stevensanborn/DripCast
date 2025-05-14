@@ -48,26 +48,11 @@ const VideoClientPlayer =  React.forwardRef((
     const refIsScrubbing = useRef<boolean>(false);
     const paywallRef = useRef<HTMLDivElement>(null);
     const [paywallMonetizations,setPaywallMonetizations] = useState<typeof monetization.$inferSelect[]>([]);
-    const utils = trpc.useUtils();
-
+    
     //type of monetization to tell what mode we are going to use 
     const [monetizationType,setMonetizationType] = useState<"" | "payperminute" | "multi"| "single">("");
   
-    // const createPayment = trpc.monetization.createPayment.useMutation({
-
-    //     onSuccess:()=>{
-    //         console.log("Payment created");
-    //         utils.monetization.getMonetizationPayments.invalidate({videoId})
-            
-    //     },
-    //     onError:(error)=>{
-    //         console.log(error);
-    //     }
-    // });
-
-
-  
-  const paywallCheck= useCallback((time:number)=>{
+    const paywallCheck= useCallback((time:number)=>{
     
     if(!monetizations || monetizations.length === 0) return;
     
@@ -162,7 +147,7 @@ const VideoClientPlayer =  React.forwardRef((
     const startPosX =e.clientX - scrubberRef.current!.parentElement!.getBoundingClientRect().x - scrubberRef.current!.offsetWidth/2;
     const startPaused = eleVideo!.paused;
     refIsScrubbing.current = true;
-    let timestamp = new Date().getTime();
+    const timestamp = new Date().getTime();
     const handleScrubberMouseMove = (e:MouseEvent)=>{
         
         //set position of scrubber
@@ -183,7 +168,7 @@ const VideoClientPlayer =  React.forwardRef((
         //see if time is more than 100ms
         if(new Date().getTime() - timestamp < 200){
             //click 
-            let pos = rangeBoundScrubber(startPosX);
+            const pos = rangeBoundScrubber(startPosX);
             scrubberRef.current!.style.left = `${pos}px`;
             scrubberBarProgressRef.current!.style.left = `${pos}px`;
             const time = (pos/scrubberBarRef.current!.offsetWidth)*durationRef.current;

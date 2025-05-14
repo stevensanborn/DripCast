@@ -1,14 +1,12 @@
 import {monetization, monetizationPayments} from "@/db/schema"
 import {  VideoIcon, VideoOffIcon } from "lucide-react"
-import { monetization as monetizationType } from "@/db/schema"
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 interface MonetizationThumbsProps{
-    monetizations: typeof monetizationType.$inferSelect[]
+    monetizations: typeof monetization.$inferSelect[]
     payments: typeof monetizationPayments.$inferSelect[];
-    onClickThumb: (monetization: typeof monetizationType.$inferSelect) => void;
-    purchaseMonetization: (monetization: typeof monetizationType.$inferSelect) => void;
+    onClickThumb: (m: typeof monetization.$inferSelect) => void;
+    purchaseMonetization: (m: typeof monetization.$inferSelect) => void;
 }
 export const MonetizationThumbs = ({monetizations, payments, onClickThumb, purchaseMonetization}:MonetizationThumbsProps) => {
     return (

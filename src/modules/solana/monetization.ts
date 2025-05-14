@@ -218,11 +218,11 @@ export async function saveMonetizationState( m:typeof monetization.$inferSelect,
     const monetizationAddress = await getMonetizationAddress(SolanaState.wallet.publicKey, await getHexHash(m.id));
     //get address of the monetization state for user
 
-    let keyState = await getMonetizationStateAddress(monetizationAddress, SolanaState.wallet.publicKey)
+    const keyState = await getMonetizationStateAddress(monetizationAddress, SolanaState.wallet.publicKey)
 
     const connection = SolanaState.connection!;
 
-    let stateAccountInfo = await connection.getAccountInfo(keyState);
+    const stateAccountInfo = await connection.getAccountInfo(keyState);
     
     const program = getBasicProgram(SolanaState.provider);
 
