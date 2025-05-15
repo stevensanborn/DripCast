@@ -68,7 +68,7 @@ export const AccountSection = () => {
            
             <Card className="bg-secondary" >
                 <CardHeader>
-                    <CardTitle className="flex item">Wallet  <Button variant="ghost" size="icon"  onClick={()=>{
+                    <CardTitle className="flex items-center gap-2">Wallet  <Button variant="ghost" size="icon"  onClick={()=>{
                                 setRefreshing(refreshing+1)
                             }}><RotateCw  /></Button></CardTitle>
                 </CardHeader>

@@ -11,6 +11,8 @@ import { cn } from "@/lib/utils";
 interface MonetizationThumbsProps{
     monetizations: typeof monetization.$inferSelect[]
     payments: typeof monetizationPayments.$inferSelect[];
+    paymentTrigger: number;
+    setPaymentTrigger: (trigger: number) => void;
     onClickThumb: (m: typeof monetization.$inferSelect) => void;
     purchaseMonetization: (m: typeof monetization.$inferSelect) => void;
 }
@@ -20,19 +22,21 @@ interface MonetizationThumbProps {
     payments: typeof monetizationPayments.$inferSelect[];
     onClickThumb: (m: typeof monetization.$inferSelect) => void;
     purchaseMonetization: (m: typeof monetization.$inferSelect) => void;
+    paymentTrigger: number;
+    setPaymentTrigger: (trigger: number) => void;
 }
 
-export const MonetizationThumbs = ({monetizations, payments, onClickThumb, purchaseMonetization}:MonetizationThumbsProps) => {
+export const MonetizationThumbs = ({monetizations, payments, onClickThumb, purchaseMonetization,paymentTrigger,setPaymentTrigger}:MonetizationThumbsProps) => {
     return (
         <div className="flex gap-2 w-full justify-end mt-2">
             {monetizations.map((monetization)=>(
-              <MonetizationThumb key={monetization.id} m={monetization} payments={payments} onClickThumb={onClickThumb} purchaseMonetization={purchaseMonetization} />
+              <MonetizationThumb key={monetization.id} m={monetization} payments={payments} onClickThumb={onClickThumb} purchaseMonetization={purchaseMonetization} paymentTrigger={paymentTrigger} setPaymentTrigger={setPaymentTrigger} />
             ))}
         </div>
     )
 }
 
-export const MonetizationThumb = ({m, payments, onClickThumb, purchaseMonetization}:MonetizationThumbProps) => {
+export const MonetizationThumb = ({m, payments, onClickThumb, purchaseMonetization,paymentTrigger,setPaymentTrigger}:MonetizationThumbProps) => {
     const [timeLeft, setTimeLeft] = useState(m.duration)
     
     //get payments related to the monetization soerted by date
@@ -59,9 +63,11 @@ export const MonetizationThumb = ({m, payments, onClickThumb, purchaseMonetizati
         if(!!m.duration === false) return obj
         
         const secondsLeft = timeLeftForPayment(m,obj.payment)
-        console.log('secondsLeft:',secondsLeft)
         obj.expiredAt = new Date(obj.payment.updatedAt).getTime() + (m.duration *1000)
         if(secondsLeft < 0){
+            if(obj.expired === false){
+                setPaymentTrigger(paymentTrigger+1)
+            }   
             obj.expired = true
         }
         return obj

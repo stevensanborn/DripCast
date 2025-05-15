@@ -25,6 +25,7 @@ interface VideoClientPlayerProps{
     monetizations: typeof monetization.$inferSelect[];
     payments: typeof monetizationPayments.$inferSelect[];
     purchaseMonetization: (m: typeof monetization.$inferSelect) => void;
+    paymentTrigger: number;
 }
 
 export const VideoPlayerSkeleton = () => {
@@ -34,7 +35,7 @@ export const VideoPlayerSkeleton = () => {
 }
 
 const VideoClientPlayer =  React.forwardRef((
-    {videoId,playbackId,posterUrl,autoPlay,onPlay,onDuration,muted=false,monetizations,payments,purchaseMonetization}:VideoClientPlayerProps,ref:React.Ref<ReactPlayer>) => {
+    {videoId,playbackId,posterUrl,autoPlay,onPlay,onDuration,muted=false,monetizations,payments,purchaseMonetization,paymentTrigger}:VideoClientPlayerProps,ref:React.Ref<ReactPlayer>) => {
  
     const [playing,setPlaying] = useState(autoPlay);
     const [isMuted,setIsMuted] = useState(muted);
@@ -57,7 +58,7 @@ const VideoClientPlayer =  React.forwardRef((
         return (m:typeof monetization.$inferSelect)=>payments.filter((payment)=>payment.monetizationId === m.id).sort((a,b)=>new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
     },[payments])
 
-    const hasValidPaymentsForMonetization =  (m:typeof monetization.$inferSelect)=>{
+    const hasValidPaymentsForMonetization = useMemo( ()=>{return (m:typeof monetization.$inferSelect)=>{
             const pays = getPaymentsForMonetization(m)
             if(pays.length > 0){
                 //check if there is a payment that is not expired
@@ -68,7 +69,8 @@ const VideoClientPlayer =  React.forwardRef((
                 }
             }
             return false;
-    }
+        }
+    },[getPaymentsForMonetization,paymentTrigger])
 
 
     const paywallCheck= useCallback((time:number)=>{

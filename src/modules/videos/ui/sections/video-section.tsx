@@ -4,7 +4,7 @@
 
 import { cn } from "@/lib/utils"
 import { trpc } from "@/trpc/client"
-import { Suspense } from "react"
+import { Suspense, useState } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 // import VideoPlayer, { VideoPlayerSkeleton } from "../components/video-player"
 import { VideoBanner } from "../components/video-banner"
@@ -45,7 +45,8 @@ const VideoSectionInner = ({videoId}:VideoSectionProps) => {
     const [video] = trpc.videos.getOne.useSuspenseQuery({id: videoId});
     const [monetizations] = trpc.monetization.getMany.useSuspenseQuery({videoId})
     const [payments] = trpc.monetization.getMonetizationPayments.useSuspenseQuery({videoId})
-
+    const [paymentTrigger,setPaymentTrigger] = useState(0)
+    
     const {isSignedIn } = useAuth(); 
     const utils = trpc.useUtils();
 
@@ -102,6 +103,7 @@ const VideoSectionInner = ({videoId}:VideoSectionProps) => {
           monetizations={monetizations}
           payments={payments as typeof monetizationPayments.$inferSelect[]}
           purchaseMonetization={purchaseMonetization}
+          paymentTrigger={paymentTrigger}
           />  
     
        
@@ -118,6 +120,8 @@ const VideoSectionInner = ({videoId}:VideoSectionProps) => {
                 }
             }} monetizations={monetizations as typeof monetization.$inferSelect[]} payments={payments as typeof monetizationPayments.$inferSelect[]}
             purchaseMonetization={purchaseMonetization}
+            paymentTrigger={paymentTrigger}
+            setPaymentTrigger={setPaymentTrigger}
             />
           <VideoTopRow video={video} />
         </>

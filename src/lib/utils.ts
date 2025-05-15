@@ -75,6 +75,7 @@ export const timeLeftForPayment =  (mon:typeof monetization.$inferSelect,
   const msecondsLastPayment = new Date(payment.updatedAt).getTime()
   const msecondsExpiry = msecondsLastPayment + (mon.duration *1000)
   const msecondsLeft = msecondsExpiry - msecondsNow
+ 
   return Math.round(msecondsLeft/1000)
 }
 
