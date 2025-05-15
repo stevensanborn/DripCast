@@ -235,6 +235,7 @@ const VideoClientPlayer =  React.forwardRef((
     videoRef.current!.currentTime = percentProgress*durationRef.current;
   }
   
+  
 
 
   const animateFrame = useCallback(() => {
@@ -292,12 +293,13 @@ const VideoClientPlayer =  React.forwardRef((
                 className={"w-full h-full object-cover "+videoId}
                 poster={posterUrl || THUMBNAIL_FALLBACK_URL}
                 playing={playing}
-                muted={muted}
+                muted={isMuted}
                 controls={false}
                 width="100%"
                 height="100%"
                 onPlay={onPlay}
                 autoPlay={autoPlay}
+                volume={1.0}
                 ref={ref}
                 playsinline={true}
                 onError={(error)=>{
@@ -395,6 +397,7 @@ const VideoClientPlayer =  React.forwardRef((
 
                         <Button variant="ghost" size="icon" className="rounded-full overflow-hidden" onClick={
                             (e)=>{
+                                console.log("muted", isMuted)
                                 e.preventDefault();
                                 setIsMuted(!isMuted);
                             }
