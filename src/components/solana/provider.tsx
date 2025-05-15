@@ -25,7 +25,8 @@ export default function AppWalletProvider({
     children: React.ReactNode;
   }) {
     // const network = WalletAdapterNetwork.Devnet;
-    const endpoint = "https://devnet.helius-rpc.com/?api-key=e6bc5c8f-3dd6-4bfb-9b3b-b198a19d7a65"
+    console.log("process.env.NEXT_PUBLIC_SOLANA_RPC_URL", process.env.NEXT_PUBLIC_SOLANA_RPC_URL)
+    const endpoint =  process.env.NEXT_PUBLIC_SOLANA_RPC_URL || "https://api.devnet.solana.com"
     // useMemo(() => clusterApiUrl(network), [network]);
     const wallets = useMemo(
       () => [

@@ -20,8 +20,14 @@ export async function initializeMonetization(v:StudioGetOneOutput, m:typeof mone
     }
     
     const key = getCreatorAddress(SolanaState.wallet.publicKey);
-    
-    const accountInfo = await SolanaState.connection!.getAccountInfo(key);
+    let accountInfo = null;
+    try{
+        accountInfo = await SolanaState.connection!.getAccountInfo(key);
+    }catch(e){
+        // throw new Error("Creator address not found");
+        console.log("Creator address not found trying to retrieve creator account")
+        return
+    }
     
     const connection = SolanaState.connection!;
     
@@ -168,10 +174,18 @@ export async function closeMonetization(v:StudioGetOneOutput, m:typeof monetizat
     
     const connection = SolanaState.connection!;
     const monetizationAddress = await getMonetizationAddress(SolanaState.wallet.publicKey, await getHexHash(m.id) );
-    const accountInfo = await connection!.getAccountInfo(monetizationAddress);
-    
+    let accountInfo = null;
+    try{
+        accountInfo = await connection!.getAccountInfo(monetizationAddress);
+    }catch(e){
+        console.log("error", e)
+        onComplete?.("")
+    }
     if(!accountInfo){
-        throw new Error("Monetization not found for "+monetizationAddress.toBase58());
+        // throw new Error("Monetization not found for "+monetizationAddress.toBase58());
+        console.log("Monetization not found for "+monetizationAddress.toBase58())
+        onComplete?.("")
+        return
     }
     
     const program = getBasicProgram(SolanaState.provider);
