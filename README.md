@@ -2,7 +2,7 @@
 # DripCast
 
 
-## DripCast is video platform that explores how micropayments can be used to better monetize on the Solana blockchain.
+## DripCast is video platform that explores how micropayments can help content creators monetize using the Solana blockchain.
 
 
 Live Demo on Devnet:
