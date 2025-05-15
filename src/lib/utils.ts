@@ -1,3 +1,5 @@
+import { monetization } from "@/db/schema";
+import { monetizationPayments } from "@/db/schema";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -63,3 +65,34 @@ export const getHexHash = async (text: string): Promise<string> => {
   // Convert to base64 and remove padding
   return btoa(String.fromCharCode(...hashArray)).replace(/=/g, '');
 }
+
+export const timeLeftForPayment =  (mon:typeof monetization.$inferSelect,
+  payment:typeof monetizationPayments.$inferSelect)=>{
+  if(!!mon.duration === false) return -1 //no duration so no expiry set
+
+  const date = new Date();
+  const msecondsNow = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds(), date.getUTCMilliseconds());
+  const msecondsLastPayment = new Date(payment.updatedAt).getTime()
+  const msecondsExpiry = msecondsLastPayment + (mon.duration *1000)
+  const msecondsLeft = msecondsExpiry - msecondsNow
+  return Math.round(msecondsLeft/1000)
+}
+
+export const toTime = (seconds:number)=>{
+  if(seconds < 0) return '0'
+  const days     = Math.floor(seconds / (24*60*60));
+      seconds -= days    * (24*60*60);
+  const hours    = Math.floor(seconds / (60*60));
+      seconds -= hours   * (60*60);
+  const minutes  = Math.floor(seconds / (60));
+      seconds -= minutes * (60);
+      let time = ''
+      if(days > 0){
+        time = `${days}d ${hours}h ${minutes}m ${seconds}s`
+      }else if(hours > 0){
+        time = `${hours}h ${minutes}m ${seconds}s`
+      }else{
+        time = `${minutes}m ${seconds}s`
+      }
+      return time;
+   }

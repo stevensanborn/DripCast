@@ -17,7 +17,6 @@ import Link from "next/link"
 import { MonetizationTimeline } from "@/modules/monetization/ui/components/monetization-timeline"
 import { closeMonetization, initializeMonetization, updateMonetizationOnChain } from "@/modules/solana/monetization"
 import { SolanaState } from "@/components/solana/solana-state"
-import { Separator } from "@radix-ui/react-separator"
 
 interface MonetizationSectionProps {
     videoId: string
@@ -156,20 +155,22 @@ export const MonetizationSectionContent = ({videoId}:MonetizationSectionProps) =
 
         if(data.id.indexOf('temp') !== -1){
             console.log('data',data)
-            type InsertMonetizationInput = Omit<z.infer<typeof formScheme>, "id"> & { type: "purchase" | "snippet" | "payperminute", creatorKey: string };
+            type InsertMonetizationInput = Omit<z.infer<typeof formScheme>, "id"> 
+            & { type: "purchase" | "snippet" | "payperminute", creatorKey: string };
 
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { id, ...rest } = data;
             const d:InsertMonetizationInput = {
                 ...rest,
-                cost: data.cost * 1_000_000_000, //CONVERSION FROM SOL TO LAMPORT
+                duration: Number(data.duration ?? 0),
+                cost: Number(data.cost) * 1_000_000_000, //CONVERSION FROM SOL TO LAMPORT
                 type: data.type as "purchase" | "snippet" | "payperminute",
                 creatorKey: SolanaState.wallet?.publicKey?.toBase58() ?? "",
             }
            
 
             //inster into db
-            console.log('d',d)
+            console.log('d:',d)
             await insertMonetization.mutateAsync(d,{
                 onSuccess: (result) => {
                     
@@ -187,6 +188,8 @@ export const MonetizationSectionContent = ({videoId}:MonetizationSectionProps) =
             });
         }else {
             data.cost = data.cost * 1_000_000_000 //CONVERSION FROM SOL TO LAMPORT
+            data.duration= Number(data.duration ?? 0)
+            
             updateMonetizationOnChain(video,{...data,
             },(tx:string)=>{
                 toast.success("Monetization updating...... "+tx)
@@ -471,28 +474,28 @@ return (
                                     </FormItem>
                                 )} />
                                 </div>
-                                <div  >
+                              
                                 <FormField control={formCurrent.control} name="cost" render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="text-xs text-foreground-muted">Cost</FormLabel>
                                         <FormDescription>Enter the cost of this purchase. Priced in Sol.  </FormDescription>
                                         <FormControl  >
+                                        <div className="flex items-center justify-start gap-2"  >
                                             <Input {...field} placeholder="0" className="w-32"  value={field.value ?? ""} /> 
-                                        </FormControl>
+                                            <span className="text-xs text-foreground-muted"> ${priceUSD}</span>
+                                            </div>
+                                            </FormControl>
                                         <FormMessage />
                                     </FormItem>
-                                )} /><span className="text-xs text-foreground-muted"> ${priceUSD}</span>
-                                </div>
+                                )} />
+                               
                             
 
                             </div>
                             
                 </div>
-                <div>
-                    <Separator orientation="horizontal" className="w-full my-4" />
-                    <h1>Txs:</h1>
-                </div>
-                <Button type="submit">Submit</Button>
+                
+                <Button type="submit" className="mt-0">Submit</Button>
             </>
             ) : (
 

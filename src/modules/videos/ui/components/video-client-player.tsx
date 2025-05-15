@@ -1,12 +1,12 @@
 "use client"
 
-import React, { useEffect, useCallback,   useRef, useState } from "react";
+import React, { useEffect, useCallback,   useRef, useState, useMemo } from "react";
 import { THUMBNAIL_FALLBACK_URL } from "../../constants";
 import ReactPlayer from "react-player";
 import { monetization, monetizationPayments } from "@/db/schema";
 import { Button } from "@/components/ui/button";
 import { PauseIcon, PlayIcon, VolumeOffIcon, VolumeIcon } from "lucide-react";
-
+import { cn, timeLeftForPayment } from "@/lib/utils";
 
 // import { initializeMonetization } from "@/modules/solana/monetizationState";
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -52,6 +52,25 @@ const VideoClientPlayer =  React.forwardRef((
     //type of monetization to tell what mode we are going to use 
     const [monetizationType,setMonetizationType] = useState<"" | "payperminute" | "multi"| "single">("");
   
+    
+    const getPaymentsForMonetization = useMemo( ()=>{
+        return (m:typeof monetization.$inferSelect)=>payments.filter((payment)=>payment.monetizationId === m.id).sort((a,b)=>new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+    },[payments])
+
+    const hasValidPaymentsForMonetization =  (m:typeof monetization.$inferSelect)=>{
+            const pays = getPaymentsForMonetization(m)
+            if(pays.length > 0){
+                //check if there is a payment that is not expired
+                if(m.duration === 0){
+                    return true;
+                }else{
+                    return timeLeftForPayment(m,pays[0])>0;
+                }
+            }
+            return false;
+    }
+
+
     const paywallCheck= useCallback((time:number)=>{
     
     if(!monetizations || monetizations.length === 0) return;
@@ -67,6 +86,7 @@ const VideoClientPlayer =  React.forwardRef((
     
     if(monetizations.length ==0 ) return false;
 
+    
     monetizations.forEach((monetization)=>{
         //is within the range of the monetization
         if(monetization.type === "purchase" || monetization.type === "snippet"){
@@ -77,11 +97,22 @@ const VideoClientPlayer =  React.forwardRef((
             if(time >= Number(monetization.startTime) && time <= endTime){
                 //check if there is an existing payment for this monetization
                 let isPaid = false;
-                payments.forEach((payment)=>{
-                    if(payment.monetizationId === monetization.id){
+                //check if the payment is expired
+               
+                    const paymentsForMonetization = getPaymentsForMonetization(monetization);
+                 if(paymentsForMonetization.length > 0){
+                    if(monetization.duration === 0){
                         isPaid = true;
+                    }else{
+                    paymentsForMonetization.forEach((p)=>{
+                      //check if the payment is expired
+                      if(timeLeftForPayment(monetization,p) > 0){
+                        isPaid = true;
+                      }
+                    })
                     }
-                })
+                }
+                
                 if(!isPaid){
                     isPaywallVisible = false;
                     isPaywallVisible = true;
@@ -89,7 +120,6 @@ const VideoClientPlayer =  React.forwardRef((
                     overlapingMonetizations.push(monetization);
                 }
                 
-
             }
             
         }
@@ -267,6 +297,7 @@ const VideoClientPlayer =  React.forwardRef((
                 onPlay={onPlay}
                 autoPlay={autoPlay}
                 ref={ref}
+                playsinline={true}
                 onError={(error)=>{
                     console.log(error);
                 }}
@@ -287,30 +318,28 @@ const VideoClientPlayer =  React.forwardRef((
             />)}
              <div className="paywall w-full h-full absolute top-0 left-0 bg-black/50 bg-gradient-to-bl from-black/50 to-black/80   hidden" ref={paywallRef} >
                 <div className="flex flex-col w-full h-full justify-center items-center">
-                    { hasMounted &&(
-                   <Card >
+                    { hasMounted &&  paywallMonetizations.map((monetization)=>{
+                   return (<Card key={"paywall-"+monetization.id}>
                    <CardHeader>
-                   <CardTitle className="text-sm">Purchase</CardTitle>
+                   <CardTitle className="text-sm">Purchase - {monetization.title}</CardTitle>
                    <CardDescription className="text-xs">
-                   To access this content, consider the following options
+                   To purchase this content, please click the button below.
                    </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        {paywallMonetizations.map((monetization)=>{
-                            return (
-                                <div className=" flex flex-col items-start space-y-4 rounded-md border p-4" key={"paywall-"+monetization.id}>
-                                <p className="text-sm font-medium leading-none">{monetization.title}</p>
-                                <p className="text-sm text-muted-foreground leading-none">{monetization.description}</p>
-                                 <Button variant="outline" key={"paywall-"+monetization.id} className="rounded-full" 
-                                    onClick={()=>{
-                                        purchaseMonetization(monetization);
-                                    }}>Purchase </Button>
-                                </div>
-                            )
-                        })}
+                      <div className=" flex flex-col items-start space-y-4 rounded-md border p-4" key={"paywall-"+monetization.id}>
+                        <p className="text-xs text-muted-foreground">{monetization.description}</p>
+                        <p className="text-xs text-muted-foreground">Cost: <span className="text-dripcast_blue">{monetization.cost/1_000_000_000} SOL</span></p>
+                            <Button variant="outline" key={"paywall-"+monetization.id} className="rounded-full" 
+                            onClick={()=>{
+                                purchaseMonetization(monetization);
+                            }}>Purchase </Button>
+                        </div>
+                    
+                       
                    </CardContent>
                    </Card>
-                   )}
+                   )})}
                 </div>
             </div>
             </div>
@@ -331,10 +360,15 @@ const VideoClientPlayer =  React.forwardRef((
                            hasMounted && monetizations.map((monetization)=>{
                                 return (
                                     monetization.type === "snippet" && (
-                                        <div   key={"bar"+monetization.id} className="monetization-bar   bg-crayola_red absolute h-full  rounded-full right-0 cursor-pointer" 
-                                        style={{left:getScrubberPositionBasedOnTime(Number(monetization.startTime)),right:getRightScrubberPositionBasedOnTime(Number(monetization.endTime))}} >
-                                            {/* <div className="monetization-bar-line bg-crayola_red/80  h-full w-[1px]  absolute left-0  pointer-events-none " ></div>
-                                            <div className="monetization-bar-line bg-crayola_red/80  h-full w-[1px]  absolute right-0  pointer-events-none " ></div> */}
+                                        <div   
+                                            key={"bar"+monetization.id} 
+                                            className={cn("monetization-bar  absolute h-full  rounded-full right-0 cursor-pointer",
+                                                hasValidPaymentsForMonetization(monetization) ? "bg-green-700/50 border-[1px] border-white" : "bg-crayola_red"
+                                            )}
+                                            style={{
+                                                left:getScrubberPositionBasedOnTime(Number(monetization.startTime)),
+                                                right:getRightScrubberPositionBasedOnTime(Number(monetization.endTime))
+                                            }} >
                                         </div>
                                     )
                                 )

@@ -34,7 +34,7 @@ export function Donut({progress}:DonutProps){
             let ratio = 1-progress
             ratio = Math.min(1,Math.max(0,ratio))
 
-            refTimerCircle.current.style.strokeDashoffset = `${(100 - (ratio * 100 ) ) * 3.6}px`
+            refTimerCircle.current.style.strokeDashoffset = `${( (1-ratio ) ) * 275}px`
 
             const color2 = 'FF3244';
             const color1 = '00C49F';
@@ -51,9 +51,8 @@ export function Donut({progress}:DonutProps){
     },[progress])
 
     return (
-        <svg
+        <svg    
                     version="1.1"
-                    id="circle"
                     xmlns="http://www.w3.org/2000/svg"
                     x="0px"
                     y="0px"
@@ -66,29 +65,31 @@ export function Donut({progress}:DonutProps){
                       fill="none"
                       stroke="#2E3234"
                       strokeWidth="10"
-                      strokeMitter-limit="0"
+                      strokeMiterlimit="0"
                       cx="50"
                       cy="50"
                       r="45"
-                      strokeDasharray="360"
+                      strokeDasharray="275"
                       strokeLinecap="round"
                       transform="rotate(-90 ) translate(-100 0)"
                       
                     ></circle>
+                    {progress>0 && (
                     <circle
                       ref={refTimerCircle}
                       fill="none"
                       stroke="#2E3234"
                       strokeWidth="10"
-                      strokeMitter-limit="0"
+                      strokeMiterlimit="0"
                       cx="50"
                       cy="50"
                       r="45"
-                      strokeDasharray="360"
+                      strokeDasharray="275"
+                      strokeDashoffset="0"
                       strokeLinecap="square"
                       transform="rotate(-90 ) translate(-100 0)"
                     ></circle>
-
+                    )}
                     
                   </svg>
     )

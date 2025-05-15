@@ -116,7 +116,7 @@ const VideoSectionInner = ({videoId}:VideoSectionProps) => {
                 }else{
                     
                 }
-            }} monetizations={monetizations} payments={payments as typeof monetizationPayments.$inferSelect[]}
+            }} monetizations={monetizations as typeof monetization.$inferSelect[]} payments={payments as typeof monetizationPayments.$inferSelect[]}
             purchaseMonetization={purchaseMonetization}
             />
           <VideoTopRow video={video} />
