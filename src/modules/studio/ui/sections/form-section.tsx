@@ -174,7 +174,12 @@ export const FormSectionContent = ({videoId}:FormSectionProps) => {
                         <FormItem>
                             <FormLabel>Title</FormLabel>
                             <FormControl>
-                                <Input {...field} placeholder="Enter video title" />
+                                <Input {...field} placeholder="Enter video title"  onFocus={
+                                    //select all text
+                                    (e)=>{
+                                        e.target.select()
+                                    }
+                                }/>
                             </FormControl>
                             <FormMessage />
                         </FormItem>
