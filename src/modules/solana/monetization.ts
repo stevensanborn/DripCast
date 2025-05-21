@@ -25,7 +25,7 @@ export async function initializeMonetization(v:StudioGetOneOutput, m:typeof mone
         accountInfo = await SolanaState.connection!.getAccountInfo(key);
     }catch(e){
         // throw new Error("Creator address not found");
-        console.log("Creator address not found trying to retrieve creator account")
+        console.log("Creator address not found trying to retrieve creator account",e)
         return
     }
     
