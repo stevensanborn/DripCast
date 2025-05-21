@@ -158,7 +158,7 @@ const VideosSectionSuspense = ({userId,visibility}:VideosSectionProps) => {
                                          {video.viewCount}
                                         </TableCell>
                                         <TableCell className="pl-6 text-right text-sm">
-                                       -
+                                        {video.commentCount}
                                         </TableCell>
                                         
                                         <TableCell className="pl-6 text-right text-sm pr-6">

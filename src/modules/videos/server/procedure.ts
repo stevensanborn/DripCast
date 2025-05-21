@@ -1,5 +1,5 @@
 import { db } from "@/db"
-import { subscriptions, users, videoReactions, videos, videoUpdateSchema } from "@/db/schema"
+import { comments, subscriptions, users, videoReactions, videos, videoUpdateSchema } from "@/db/schema"
 import { mux } from "@/lib/mux"
 import { baseProcedure, createTRPCRouter,protectedProcedure } from "@/trpc/init"
 import { TRPCError } from "@trpc/server"
@@ -40,10 +40,8 @@ export const videosRouter = createTRPCRouter({
         {
                 user:users,
                 viewCount: db.$count(videoViews,eq(videoViews.videoId,videos.id)),
-                likeCount: db.$count(videoReactions,
-                    and(eq(videoReactions.reaction,"like"),eq(videoReactions.videoId,videos.id))),
-                dislikeCount: db.$count(videoReactions,
-                and(eq(videoReactions.reaction,"dislike"),eq(videoReactions.videoId,videos.id))),
+                likeCount: db.$count(videoReactions,and(eq(videoReactions.reaction,"like"),eq(videoReactions.videoId,videos.id))),
+                dislikeCount: db.$count(videoReactions,and(eq(videoReactions.reaction,"dislike"),eq(videoReactions.videoId,videos.id))),
                 ...getTableColumns(videos),
             })
             .from(videos)
@@ -153,10 +151,9 @@ export const videosRouter = createTRPCRouter({
             {
                 user:users,
                 viewCount: db.$count(videoViews,eq(videoViews.videoId,videos.id)),
-                likeCount: db.$count(videoReactions,
-                    and(eq(videoReactions.reaction,"like"),eq(videoReactions.videoId,videos.id))),
-                dislikeCount: db.$count(videoReactions,
-                and(eq(videoReactions.reaction,"dislike"),eq(videoReactions.videoId,videos.id))),
+                likeCount: db.$count(videoReactions, and(eq(videoReactions.reaction,"like"),eq(videoReactions.videoId,videos.id))),
+                dislikeCount: db.$count(videoReactions,and(eq(videoReactions.reaction,"dislike"),eq(videoReactions.videoId,videos.id))),
+                commentCount: db.$count(comments,eq(comments.videoId,videos.id)),
                 ...getTableColumns(videos),
             })
             .from(videos)
