@@ -9,7 +9,7 @@ import Link from "next/link"
 const items = [
     {title: "History", icon: HistoryIcon, auth:true, url: "/history"},
     {title: "Liked Videos", icon: ThumbsUpIcon,auth:true,url: "/playlists/liked"},
-    {title: "All Playlists", icon: ListVideoIcon,auth:false,url: "/playlists"},
+    
 ]
 
 
