@@ -3,7 +3,7 @@
 import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuItem ,SidebarMenuButton, SidebarGroupLabel} from "@/components/ui/sidebar"
 import { useAuth } from "@clerk/nextjs"
 import { useClerk } from "@clerk/nextjs"
-import { HistoryIcon,  ListVideoIcon,  ThumbsUpIcon, ClapperboardIcon } from "lucide-react"
+import { HistoryIcon,   ThumbsUpIcon, ClapperboardIcon } from "lucide-react"
 import Link from "next/link"
 
 const items = [
